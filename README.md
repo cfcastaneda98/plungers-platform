@@ -9,7 +9,7 @@ This repository contains the source code and documentation for the Plungers web 
 ## Project Status
 
 - **Phase 1:** Architecture & Requirements — ✅ Complete  
-- **Phase 2:** Website MVP & Core Platform — 🚧 Upcoming  
+- **Phase 2:** Website MVP & Core Platform — 🚧 Ongoing  
 - **Phase 3:** Optimization, Scaling & Enhancements — ⏳ Planned
 
 ---
