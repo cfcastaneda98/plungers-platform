@@ -13,4 +13,15 @@ html {
 body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  color: #1a1a2e;
+}
+
+:root {
+  --primary: #f97316;
+  --primary-dark: #ea6c0a;
+  --text-dark: #1a1a2e;
+  --text-mid: #4a4a6a;
+  --text-light: #9090a0;
+  --bg-light: #f8f8fc;
+  --border: #e8e8f0;
 }
