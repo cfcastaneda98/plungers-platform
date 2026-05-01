@@ -72,34 +72,37 @@ const EXPERIENCES = [
 
 export default function FeaturedExperiences() {
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-20 bg-[#f4fafa]">
       <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
 
-        {/* Section Header */}
-        <div className="flex items-center justify-between mb-10">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-12">
           <div>
-            <p className="text-orange-500 font-semibold text-sm uppercase tracking-widest mb-1">
+            <p className="text-[#006f6b] font-bold text-xs uppercase tracking-[0.2em] mb-2">
               Trending Now
             </p>
-            <h2 className="text-3xl font-extrabold text-gray-900">
+            <h2
+              className="text-3xl font-black text-[#062626]"
+              style={{ fontFamily: "'Montserrat', sans-serif" }}
+            >
               Most popular experiences
             </h2>
           </div>
           <Link
             href="/experiences"
-            className="hidden sm:flex items-center gap-1 text-orange-500 hover:text-orange-600 font-semibold text-sm transition-colors"
+            className="hidden sm:flex items-center gap-1 text-[#006f6b] hover:text-[#00534d] font-bold text-sm transition-colors"
           >
             View all →
           </Link>
         </div>
 
-        {/* Cards Grid */}
+        {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {EXPERIENCES.map((exp) => (
             <Link
               key={exp.id}
               href={`/experiences/${exp.id}`}
-              className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100"
+              className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-[#e0f0ef]"
             >
               {/* Image */}
               <div className="relative overflow-hidden h-52">
@@ -108,51 +111,44 @@ export default function FeaturedExperiences() {
                   alt={exp.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-orange-500 text-xs font-semibold px-2.5 py-1 rounded-full">
+                <div className="absolute top-3 left-3 bg-[#062626]/80 backdrop-blur-sm text-[#89e3d5] text-xs font-bold px-3 py-1.5 rounded-full">
                   {exp.category}
                 </div>
               </div>
 
               {/* Content */}
               <div className="p-5">
-                {/* Location */}
-                <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-2">
+                <div className="flex items-center gap-1.5 text-[#006f6b] text-xs mb-2 font-medium">
                   <MapPin size={12} />
                   <span>{exp.location}</span>
                 </div>
 
-                {/* Title */}
-                <h3 className="font-bold text-gray-900 text-base leading-snug mb-3 group-hover:text-orange-500 transition-colors line-clamp-2">
+                <h3 className="font-bold text-[#062626] text-base leading-snug mb-3 group-hover:text-[#006f6b] transition-colors line-clamp-2">
                   {exp.title}
                 </h3>
 
-                {/* Meta Row */}
-                <div className="flex items-center gap-3 text-xs text-gray-500 mb-4">
+                <div className="flex items-center gap-3 text-xs text-gray-500 mb-4 font-medium">
                   <span className="flex items-center gap-1">
                     <Clock size={12} />
                     {exp.duration}
                   </span>
                 </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  {/* Rating */}
+                <div className="flex items-center justify-between pt-3 border-t border-[#e0f0ef]">
                   <div className="flex items-center gap-1.5">
-                    <div className="bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded">
+                    <div className="bg-[#006f6b] text-white text-xs font-black px-2 py-0.5 rounded">
                       {exp.rating}
                     </div>
-                    <div className="flex items-center gap-0.5 text-yellow-400">
+                    <div className="flex items-center gap-0.5 text-[#9d691d]">
                       <Star size={12} fill="currentColor" />
                     </div>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-400 font-medium">
                       ({exp.reviews})
                     </span>
                   </div>
-
-                  {/* Price */}
                   <div className="text-right">
-                    <span className="text-xs text-gray-400">from </span>
-                    <span className="text-lg font-extrabold text-gray-900">
+                    <span className="text-xs text-gray-400 font-medium">from </span>
+                    <span className="text-lg font-black text-[#062626]">
                       ${exp.price}
                     </span>
                   </div>

@@ -11,7 +11,11 @@ const geist = Geist({
 
 export const metadata: Metadata = {
   title: "Plungers | Discover Local Experiences",
-  description: "Connect with authentic cultural experiences wherever you are.",
+  description: "Connect with authentic cultural experiences wherever you are. Explore. Connect. Transform.",
+  icons: {
+    icon: "/images/plungers-favicon.svg",
+    apple: "/images/plungers-favicon.svg",
+  },
 };
 
 export default function RootLayout({

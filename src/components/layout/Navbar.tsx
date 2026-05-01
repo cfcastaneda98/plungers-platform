@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -16,25 +17,23 @@ export default function Navbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white shadow-md" : "bg-gray-900"
+        scrolled ? "bg-white shadow-md" : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+        <div className="flex items-center justify-between h-18 py-4">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <span
-              className={`text-2xl font-extrabold tracking-tight transition-colors duration-300 ${
-                scrolled ? "text-gray-900" : "text-white"
-              }`}
-            >
-              Plungers
-            </span>
+          <Link href="/" className="flex items-center">
+            <img
+              src={scrolled ? "/images/plungers-logo.svg" : "/images/plungers-logo.svg"}
+              alt="Plungers"
+              className="h-auto w-35"
+            />
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-8">
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-10">
             {[
               { label: "Experiences", href: "/experiences" },
               { label: "How It Works", href: "/#how-it-works" },
@@ -43,8 +42,8 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-colors duration-300 hover:opacity-70 ${
-                  scrolled ? "text-gray-700" : "text-white"
+                className={`text-sm font-semibold tracking-wide transition-colors duration-300 hover:opacity-70 ${
+                  scrolled ? "text-[#062626]" : "text-white"
                 }`}
               >
                 {link.label}
@@ -52,55 +51,59 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Right Side Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Right Actions */}
+          <div className="hidden md:flex items-center gap-5">
             <Link
               href="/auth/login"
-              className={`text-sm font-medium transition-colors duration-300 hover:opacity-70 ${
-                scrolled ? "text-gray-700" : "text-white"
+              className={`text-sm font-semibold transition-colors duration-300 hover:opacity-70 ${
+                scrolled ? "text-[#062626]" : "text-white"
               }`}
             >
               Sign In
             </Link>
             <Link
               href="/apply"
-              className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2 rounded-full transition-colors duration-200"
+              className="bg-[#006f6b] hover:bg-[#00534d] text-white text-sm font-bold px-6 py-3 rounded-full transition-colors duration-200 tracking-wide"
             >
               List Your Experience
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Button */}
           <button
-            className="md:hidden"
+            className="md:hidden p-2"
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            <span
-              className={`text-2xl ${scrolled ? "text-gray-900" : "text-white"}`}
-            >
-              {menuOpen ? "✕" : "☰"}
-            </span>
+            {menuOpen ? (
+              <X size={24} className={scrolled ? "text-[#062626]" : "text-white"} />
+            ) : (
+              <Menu size={24} className={scrolled ? "text-[#062626]" : "text-white"} />
+            )}
           </button>
         </div>
 
         {/* Mobile Menu */}
         {menuOpen && (
-          <div className="md:hidden bg-white border-t py-4 px-4 flex flex-col gap-4">
-            <Link href="/experiences" className="text-gray-700 font-medium">
-              Experiences
-            </Link>
-            <Link href="/#how-it-works" className="text-gray-700 font-medium">
-              How It Works
-            </Link>
-            <Link href="/apply" className="text-gray-700 font-medium">
-              For Businesses
-            </Link>
-            <Link href="/auth/login" className="text-gray-700 font-medium">
+          <div className="md:hidden bg-white border-t border-[#e0f0ef] py-5 px-2 flex flex-col gap-4">
+            {[
+              { label: "Experiences", href: "/experiences" },
+              { label: "How It Works", href: "/#how-it-works" },
+              { label: "For Businesses", href: "/apply" },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-[#062626] font-semibold py-2 px-3 rounded-lg hover:bg-[#f4fafa]"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link href="/auth/login" className="text-[#062626] font-semibold py-2 px-3 rounded-lg hover:bg-[#f4fafa]">
               Sign In
             </Link>
             <Link
               href="/apply"
-              className="bg-orange-500 text-white text-center font-semibold px-4 py-2 rounded-full"
+              className="bg-[#006f6b] text-white text-center font-bold px-6 py-3 rounded-full mt-2"
             >
               List Your Experience
             </Link>
