@@ -65,18 +65,18 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="md:col-span-1">
-            <Link
-              href="/"
-              className="text-2xl font-black text-white mb-5 block tracking-wide"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
-            >
-              PLUNGERS
+            <Link href="/" className="block mb-5">
+              <img
+                src="/images/plungers-logo.svg"
+                alt="Plungers"
+                className="h-auto w-50 brightness-0 invert"
+              />
             </Link>
             <p className="text-white/50 text-sm leading-relaxed mb-3 font-medium">
               Viaje, Aventura y Altruismo
             </p>
             <p className="text-white/40 text-xs leading-relaxed mb-8 font-medium italic">
-              "Plunge Into A World Of Change"
+              &quot;Plunge Into A World Of Change&quot;
             </p>
 
             {/* Social */}

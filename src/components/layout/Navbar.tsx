@@ -26,9 +26,9 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <img
-              src={scrolled ? "/images/plungers-logo.svg" : "/images/plungers-logo.svg"}
+              src={scrolled ? "/images/plungers-logo-dark.svg" : "/images/plungers-logo.svg"}
               alt="Plungers"
-              className="h-auto w-35"
+              className="h-auto w-35 transition-all duration-300"
             />
           </Link>
 
