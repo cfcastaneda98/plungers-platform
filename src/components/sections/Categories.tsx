@@ -17,7 +17,7 @@ const CATEGORIES = [
 
 export default function Categories() {
   return (
-    <section className="py-20 bg-white">
+    <section className="py-30 bg-white">
       <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
 
         {/* Header */}

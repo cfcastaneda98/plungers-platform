@@ -85,11 +85,11 @@ export default function Hero() {
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="What experience are you looking for?"
-                className="flex-1 px-4 py-4 text-gray-700 text-sm outline-none bg-transparent font-medium"
+                className="flex-1 px-6 py-6 text-gray-700 text-sm outline-none bg-transparent font-medium"
               />
               <button
                 onClick={handleSearch}
-                className="bg-[#006f6b] hover:bg-[#00534d] active:bg-[#062626] transition-colors text-white font-bold text-sm px-8 py-4 rounded-full m-1.5"
+                className="bg-[#006f6b] hover:bg-[#00534d] active:bg-[#062626] transition-colors text-white font-bold text-sm px-8 py-4 rounded-full m-3"
               >
                 Search
               </button>
