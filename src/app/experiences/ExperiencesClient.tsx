@@ -8,6 +8,12 @@ import {
   Clock, Star, X, ChevronDown
 } from "lucide-react";
 import { Experience } from "@/lib/types";
+import dynamic from "next/dynamic"
+
+const ExperienceMap = dynamic(
+  () => import("@/components/ui/ExperienceMap"),
+  { ssr: false }
+)
 
 const CATEGORIES = [
   { label: "All", slug: "" },
@@ -58,6 +64,7 @@ interface Props {
   }
 }
 
+
 export default function ExperiencesClient({
   initialExperiences,
   cities,
@@ -66,6 +73,7 @@ export default function ExperiencesClient({
   const router = useRouter()
   const [search, setSearch] = useState(searchParams.search || "")
   const [showFilters, setShowFilters] = useState(false)
+  const [showMap, setShowMap] = useState(false)
 
   const activeCategory = searchParams.category || ""
   const activeSort = searchParams.sort || ""
@@ -278,16 +286,39 @@ export default function ExperiencesClient({
 
       {/* Results */}
       <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-10">
-
-        {/* Results Count */}
+        
+       {/* Results Count + Map Toggle */}
         <div className="flex items-center justify-between mb-8">
-          <p className="text-[#062626]/60 text-sm font-medium">
+        <p className="text-[#062626]/60 text-sm font-medium">
             {initialExperiences.length === 0
-              ? "No experiences found"
-              : `${initialExperiences.length} experience${initialExperiences.length !== 1 ? 's' : ''} found`
+            ? "No experiences found"
+            : `${initialExperiences.length} experience${initialExperiences.length !== 1 ? 's' : ''} found`
             }
-          </p>
+        </p>
+        <button
+            onClick={() => setShowMap(!showMap)}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold border transition-all ${
+            showMap
+                ? "bg-[#062626] text-white border-[#062626]"
+                : "bg-white text-[#062626] border-[#e0f0ef] hover:border-[#006f6b]"
+            }`}
+        >
+            <MapPin size={14} />
+            {showMap ? "Hide Map" : "Show Map"}
+        </button>
         </div>
+
+                {/* Map View */}
+                {showMap && (
+                <div className="mb-8">
+                    <ExperienceMap
+                    experiences={initialExperiences}
+                    height="450px"
+                    zoom={2}
+                    center={{ lat: 20, lng: 10 }}
+                    />
+                </div>
+                )}
 
         {/* Empty State */}
         {initialExperiences.length === 0 && (

@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import MapProvider from "@/components/layout/MapProvider";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -26,9 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geist.variable} antialiased`}>
-        <Navbar />
-        {children}
-        <Footer />
+        <MapProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </MapProvider>
       </body>
     </html>
   );
