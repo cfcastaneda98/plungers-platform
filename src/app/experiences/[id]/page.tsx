@@ -4,31 +4,39 @@ import ExperienceDetailClient from "./ExperienceDetailClient";
 import { notFound } from "next/navigation";
 
 async function getExperience(id: string): Promise<Experience | null> {
-  const { data, error } = await supabase
-    .from('experiences')
-    .select('*')
-    .eq('id', id)
-    .eq('status', 'active')
-    .single()
+  try {
+    const { data, error } = await supabase
+      .from('experiences')
+      .select('*')
+      .eq('id', id)
+      .eq('status', 'active')
+      .single()
 
-  if (error || !data) return null
-  return data
+    if (error || !data) return null
+    return data
+  } catch {
+    return null
+  }
 }
 
 async function getSimilarExperiences(
   category: string,
   currentId: string
 ): Promise<Experience[]> {
-  const { data, error } = await supabase
-    .from('experiences')
-    .select('*')
-    .eq('status', 'active')
-    .eq('category', category)
-    .neq('id', currentId)
-    .limit(3)
+  try {
+    const { data, error } = await supabase
+      .from('experiences')
+      .select('*')
+      .eq('status', 'active')
+      .eq('category', category)
+      .neq('id', currentId)
+      .limit(3)
 
-  if (error) return []
-  return data || []
+    if (error) return []
+    return data || []
+  } catch {
+    return []
+  }
 }
 
 export default async function ExperienceDetailPage({

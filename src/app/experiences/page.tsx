@@ -12,80 +12,82 @@ interface SearchParams {
 }
 
 async function getExperiences(params: SearchParams): Promise<Experience[]> {
-  let query = supabase
-    .from('experiences')
-    .select('*')
-    .eq('status', 'active')
+  try {
+    let query = supabase
+      .from('experiences')
+      .select('*')
+      .eq('status', 'active')
 
-  if (params.search) {
-    query = query.or(
-      `title.ilike.%${params.search}%,description.ilike.%${params.search}%,city.ilike.%${params.search}%`
-    )
-  }
-
-  if (params.category) {
-    const categoryMap: { [key: string]: string } = {
-      'food-drink': 'Food & Drink',
-      'outdoor': 'Outdoor Adventures',
-      'arts-crafts': 'Arts & Crafts',
-      'music': 'Music & Shows',
-      'photography': 'Photography',
-      'water-sports': 'Water Sports',
-      'nature': 'Nature & Wildlife',
-      'culture': 'City & Culture',
+    if (params.search) {
+      query = query.or(
+        `title.ilike.%${params.search}%,description.ilike.%${params.search}%,city.ilike.%${params.search}%`
+      )
     }
-    const categoryLabel = categoryMap[params.category]
-    if (categoryLabel) {
-      query = query.eq('category', categoryLabel)
+
+    if (params.category) {
+      const categoryMap: { [key: string]: string } = {
+        'food-drink': 'Food & Drink',
+        'outdoor': 'Outdoor Adventures',
+        'arts-crafts': 'Arts & Crafts',
+        'music': 'Music & Shows',
+        'photography': 'Photography',
+        'water-sports': 'Water Sports',
+        'nature': 'Nature & Wildlife',
+        'culture': 'City & Culture',
+      }
+      const categoryLabel = categoryMap[params.category]
+      if (categoryLabel) {
+        query = query.eq('category', categoryLabel)
+      }
     }
-  }
 
-  if (params.city) {
-    query = query.ilike('city', `%${params.city}%`)
-  }
+    if (params.city) {
+      query = query.ilike('city', `%${params.city}%`)
+    }
 
-  if (params.min_price) {
-    query = query.gte('price', parseFloat(params.min_price))
-  }
+    if (params.min_price) {
+      query = query.gte('price', parseFloat(params.min_price))
+    }
 
-  if (params.max_price) {
-    query = query.lte('price', parseFloat(params.max_price))
-  }
+    if (params.max_price) {
+      query = query.lte('price', parseFloat(params.max_price))
+    }
 
-  switch (params.sort) {
-    case 'price_asc':
-      query = query.order('price', { ascending: true })
-      break
-    case 'price_desc':
-      query = query.order('price', { ascending: false })
-      break
-    case 'rating':
-      query = query.order('average_rating', { ascending: false })
-      break
-    default:
-      query = query.order('total_reviews', { ascending: false })
-  }
+    switch (params.sort) {
+      case 'price_asc':
+        query = query.order('price', { ascending: true })
+        break
+      case 'price_desc':
+        query = query.order('price', { ascending: false })
+        break
+      case 'rating':
+        query = query.order('average_rating', { ascending: false })
+        break
+      default:
+        query = query.order('total_reviews', { ascending: false })
+    }
 
-  const { data, error } = await query
-
-  if (error) {
-    console.error('Error fetching experiences:', error)
+    const { data, error } = await query
+    if (error) return []
+    return data || []
+  } catch {
     return []
   }
-
-  return data || []
 }
 
 async function getCities(): Promise<string[]> {
-  const { data, error } = await supabase
-    .from('experiences')
-    .select('city')
-    .eq('status', 'active')
+  try {
+    const { data, error } = await supabase
+      .from('experiences')
+      .select('city')
+      .eq('status', 'active')
 
-  if (error) return []
-
-  const cities = [...new Set(data?.map(d => d.city) || [])]
-  return cities.sort()
+    if (error) return []
+    const cities = [...new Set(data?.map(d => d.city) || [])]
+    return cities.sort()
+  } catch {
+    return []
+  }
 }
 
 export default async function ExperiencesPage({

@@ -6,20 +6,21 @@ import { supabase } from "@/lib/supabase";
 import { Experience } from "@/lib/types";
 
 async function getFeaturedExperiences(): Promise<Experience[]> {
-  const { data, error } = await supabase
-    .from('experiences')
-    .select('*')
-    .eq('status', 'active')
-    .eq('is_featured', true)
-    .order('total_reviews', { ascending: false })
-    .limit(6)
+  try {
+    const { data, error } = await supabase
+      .from('experiences')
+      .select('*')
+      .eq('status', 'active')
+      .eq('is_featured', true)
+      .order('total_reviews', { ascending: false })
+      .limit(6)
 
-  if (error) {
-    console.error('Error fetching experiences:', error)
+    if (error) return []
+    return data || []
+  } catch {
+    // Gracefully handle Supabase being paused
     return []
   }
-
-  return data || []
 }
 
 export default async function HomePage() {
