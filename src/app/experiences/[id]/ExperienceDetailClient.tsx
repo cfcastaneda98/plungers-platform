@@ -5,10 +5,11 @@ import Link from "next/link";
 import {
   MapPin, Clock, Users, Star,
   ChevronLeft, Check, X,
-  Globe, Calendar
+  Globe, Calendar, Loader2
 } from "lucide-react";
 import { Experience } from "@/lib/types";
 import dynamic from "next/dynamic"
+
 
 const ExperienceMap = dynamic(
   () => import("@/components/ui/ExperienceMap"),
@@ -42,8 +43,46 @@ export default function ExperienceDetailClient({
   similarExperiences,
 }: Props) {
   const [guests, setGuests] = useState(1)
-  const [selectedDate, setSelectedDate] = useState("")
-  const totalPrice = experience.price * guests
+const [selectedDate, setSelectedDate] = useState("")
+const [bookingLoading, setBookingLoading] = useState(false)
+const [bookingError, setBookingError] = useState("")
+const totalPrice = experience.price * guests
+
+async function handleBooking() {
+  if (!selectedDate) {
+    setBookingError("Please select a date first")
+    return
+  }
+
+  setBookingLoading(true)
+  setBookingError("")
+
+  try {
+    const response = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        experienceId: experience.id,
+        guests,
+        bookingDate: selectedDate,
+        bookingTime: '09:00',
+        travelerId: null,
+      }),
+    })
+
+    const data = await response.json()
+
+    if (data.url) {
+      window.location.href = data.url
+    } else {
+      setBookingError("Failed to create booking. Please try again.")
+    }
+  } catch {
+    setBookingError("Something went wrong. Please try again.")
+  } finally {
+    setBookingLoading(false)
+  }
+}
 
   const heroImage =
     experience.cover_image_url ||
@@ -361,11 +400,26 @@ export default function ExperienceDetailClient({
                   </div>
 
                   {/* Book Button */}
+                  {bookingError && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
+                      <p className="text-red-600 text-sm font-medium">{bookingError}</p>
+                    </div>
+                  )}
                   <button
-                    className="w-full bg-[#006f6b] hover:bg-[#00534d] active:bg-[#062626] text-white font-black py-4 rounded-xl transition-colors duration-200 text-base tracking-wide shadow-lg hover:shadow-xl"
-                    onClick={() => alert('Booking flow coming soon — Stripe integration next!')}
+                    className="w-full bg-[#006f6b] hover:bg-[#00534d] active:bg-[#062626] disabled:opacity-60 text-white font-black py-4 rounded-xl transition-colors duration-200 text-base tracking-wide shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                    onClick={handleBooking}
+                    disabled={bookingLoading || !selectedDate}
                   >
-                    Book Now
+                    {bookingLoading ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin" />
+                        Processing...
+                      </>
+                    ) : !selectedDate ? (
+                      "Select a Date First"
+                    ) : (
+                      "Book Now →"
+                    )}
                   </button>
 
                   <p className="text-center text-xs text-[#062626]/40 font-medium">
