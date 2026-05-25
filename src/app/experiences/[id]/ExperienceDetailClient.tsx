@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import MediaGallery from "@/components/ui/MediaGallery";
 import {
-  MapPin, Clock, Users, Star,
-  ChevronLeft, Check, X,
+  MapPin, Clock, Users, Star, Check, X,
   Globe, Calendar, Loader2
 } from "lucide-react";
 import { Experience } from "@/lib/types";
@@ -92,33 +92,13 @@ async function handleBooking() {
   return (
     <main className="min-h-screen bg-white">
 
-      {/* Hero Image */}
-      <div className="relative h-[55vh] w-full overflow-hidden">
-        <img
-          src={heroImage}
-          alt={experience.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-
-        {/* Back Button */}
-        <div className="absolute top-24 left-6 sm:left-10 lg:left-16">
-          <Link
-            href="/experiences"
-            className="flex items-center gap-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-bold text-sm px-4 py-2 rounded-full transition-all"
-          >
-            <ChevronLeft size={16} />
-            Back
-          </Link>
-        </div>
-
-        {/* Category Badge */}
-        <div className="absolute bottom-6 left-6 sm:left-10 lg:left-16">
-          <span className="bg-[#062626]/80 backdrop-blur-sm text-[#89e3d5] text-xs font-bold px-4 py-2 rounded-full">
-            {experience.category}
-          </span>
-        </div>
-      </div>
+      {/* Media Gallery */}
+      <MediaGallery
+        coverImage={heroImage}
+        images={experience.image_urls || []}
+        videos={experience.video_urls || []}
+        title={experience.title}
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-10">

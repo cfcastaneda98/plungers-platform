@@ -85,6 +85,7 @@ export interface Experience {
   requirements: string[] | null
   cover_image_url: string | null
   image_urls: string[]
+  video_urls: string[]
   status: ExperienceStatus
   is_featured: boolean
   total_bookings: number
