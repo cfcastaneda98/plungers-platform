@@ -45,7 +45,7 @@ export default function MediaGallery({
 }: MediaGalleryProps) {
   // Build media items array — cover first, then videos, then images
   const mediaItems: MediaItem[] = [
-    { type: "image", url: coverImage, thumbnail: coverImage },
+    { type: "image" as const, url: coverImage, thumbnail: coverImage },
     ...videos.map((v) => ({
       type: "video" as const,
       url: v,
