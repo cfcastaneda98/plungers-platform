@@ -58,6 +58,11 @@ export interface Business {
   rejection_reason: string | null
   approved_at: string | null
   approved_by: string | null
+  instagram_url: string | null
+  facebook_url: string | null
+  tiktok_url: string | null
+  twitter_url: string | null
+  youtube_url: string | null
   created_at: string
   updated_at: string
 }

@@ -7,7 +7,7 @@ async function getExperience(id: string): Promise<Experience | null> {
   try {
     const { data, error } = await supabase
       .from('experiences')
-      .select('*')
+      .select('*, businesses(*)')
       .eq('id', id)
       .eq('status', 'active')
       .single()
