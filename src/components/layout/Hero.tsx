@@ -5,17 +5,42 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
 const TRUST_BADGES = [
-  { icon: "✓", label: "Handpicked Experiences" },
-  { icon: "🌍", label: "Local Expert Hosts" },
-  { icon: "⭐", label: "Verified Reviews" },
-  { icon: "🔒", label: "No Hidden Fees" },
-];
-
-const POPULAR_TAGS = [
-  "Food Tours",
-  "Outdoor Adventures",
-  "Artisan Workshops",
-  "Cultural Experiences",
+  {
+    icon: (
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    ),
+    label: "Handpicked Experiences"
+  },
+  {
+    icon: (
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    ),
+    label: "Local Expert Hosts"
+  },
+  {
+    icon: (
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+    ),
+    label: "Verified Reviews"
+  },
+  {
+    icon: (
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    ),
+    label: "No Hidden Fees"
+  },
 ];
 
 export default function Hero() {
@@ -35,96 +60,115 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-[92vh] flex flex-col">
+    <section style={{ position: "relative", minHeight: "92vh", display: "flex", flexDirection: "column" }}>
+
       {/* Background */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1920&q=80')",
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1920&q=80')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
       />
-      {/* Gradient Overlay — teal tinted */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#062626]/85 via-[#062626]/60 to-[#006f6b]/30" />
 
-      {/* Content */}
-      <div className="relative z-10 flex-1 flex items-center pt-16">
-        <div
-          style={{ paddingLeft: "80px", paddingRight: "40px", paddingTop: "60px", paddingBottom: "60px" }}
-          className="max-w-7xl mx-auto w-full"
-        >
-          <div className="max-w-2xl">
-            {/* Eyebrow */}
-            <p className="text-[#89e3d5] font-bold text-xs uppercase tracking-[0.2em] mb-4">
-              Plunge Into A World Of Change
-            </p>
+      {/* Gradient Overlay */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "linear-gradient(to right, rgba(6,38,38,0.88) 0%, rgba(6,38,38,0.65) 50%, rgba(0,111,107,0.3) 100%)",
+        }}
+      />
 
-            {/* Headline */}
-            <h1
-              className="text-4xl sm:text-5xl font-black text-white leading-tight mb-5"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
+      {/* Main Content */}
+      <div style={{ position: "relative", zIndex: 10, flex: 1, display: "flex", alignItems: "center" }}>
+        <div style={{ width: "100%", maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "300px", paddingTop: "150px", paddingBottom: "40px" }}>
+
+          {/* Eyebrow */}
+          <p style={{ color: "#89e3d5", fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "1.25rem" }}>
+            Plunge Into A World Of Change
+          </p>
+
+          {/* Headline */}
+          <h1 style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "clamp(2.4rem, 4vw, 3.2rem)", fontWeight: 900, color: "white", lineHeight: 1.15, marginBottom: "1.25rem" }}>
+            Authentic experiences,{" "}
+            <span style={{ color: "#89e3d5" }}>wherever</span> you are
+          </h1>
+
+          {/* Subheadline */}
+          <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "1rem", lineHeight: 1.7, marginBottom: "2.5rem", maxWidth: "520px", fontWeight: 500 }}>
+            Connect with local hosts offering food tours, artisan workshops,
+            outdoor adventures, and more.
+            <br/> <br/>
+            Explore. Connect. Transform.
+          </p>
+
+          {/* Search Bar */}
+          <div style={{ display: "flex", alignItems: "center", backgroundColor: "white", borderRadius: "9999px", boxShadow: "0 4px 32px rgba(0,0,0,0.22)", overflow: "hidden", width: "100%", maxWidth: "680px" }}>
+            <div style={{ display: "flex", alignItems: "center", paddingLeft: "1.5rem", color: "#9ca3af", flexShrink: 0 }}>
+              <Search size={18} />
+            </div>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="What experience are you looking for?"
+              style={{ flex: 1, padding: "1.25rem 1rem", fontSize: "0.9rem", color: "#374151", outline: "none", background: "transparent", fontWeight: 500, fontFamily: "'Montserrat', sans-serif" }}
+            />
+            <button
+              onClick={handleSearch}
+              style={{
+                backgroundColor: "#006f6b",
+                borderRadius: "9999px",
+                margin: "6px",
+                paddingLeft: "2rem",
+                paddingRight: "2rem",
+                paddingTop: "1rem",
+                paddingBottom: "1rem",
+                color: "white",
+                fontWeight: 700,
+                fontSize: "0.875rem",
+                whiteSpace: "nowrap",
+                transition: "background-color 0.2s",
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "'Montserrat', sans-serif",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#00534d")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#006f6b")}
             >
-              Authentic experiences,{" "}
-              <span className="text-[#89e3d5]">wherever</span> you are
-            </h1>
-
-            {/* Subheadline */}
-            <p className="text-white/75 text-base leading-relaxed mb-8 max-w-lg font-medium">
-              Connect with local hosts offering food tours, artisan workshops,
-              outdoor adventures, and more. Explore. Connect. Transform.
-            </p>
-
-            {/* Search Bar */}
-            <div className="flex items-center bg-white rounded-full shadow-2xl overflow-hidden max-w-xl mb-5">
-              <div className="flex items-center pl-5 text-gray-400">
-                <Search size={18} />
-              </div>
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="What experience are you looking for?"
-                className="flex-1 px-6 py-6 text-gray-700 text-sm outline-none bg-transparent font-medium"
-              />
-              <button
-                onClick={handleSearch}
-                className="bg-[#006f6b] hover:bg-[#00534d] active:bg-[#062626] transition-colors text-white font-bold text-sm px-8 py-4 rounded-full m-3"
-              >
-                Search
-              </button>
-            </div>
-
-            {/* Popular Tags */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-white/50 text-xs font-medium">Popular:</span>
-              {POPULAR_TAGS.map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() =>
-                    router.push(`/experiences?search=${encodeURIComponent(tag)}`)
-                  }
-                  className="text-white/80 hover:text-white text-xs border border-white/25 hover:border-[#89e3d5] bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full transition-all font-medium"
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
+              Search
+            </button>
           </div>
+
         </div>
       </div>
 
-      {/* Trust Badges */}
-      <div className="relative z-10 bg-[#062626]/60 backdrop-blur-sm border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/10">
-            {TRUST_BADGES.map((badge) => (
+      {/* Trust Badges Bar — Civitatis style */}
+      <div style={{ position: "relative", zIndex: 10, backgroundColor: "rgba(0, 0, 0, 0)", borderTop: "0px solid rgba(255,255,255,0.1)" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>
+            {TRUST_BADGES.map((badge, index) => (
               <div
                 key={badge.label}
-                className="flex items-center justify-center gap-3 text-white py-5 px-4"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1.75rem",
+                  color: "white",
+                  paddingTop: "1.25rem",
+                  paddingBottom: "1.25rem",
+                  paddingLeft: index === 0 ? "0" : "2rem",
+                  paddingRight: index === 3 ? "0" : "2rem",
+                  borderRight: index < 3 ? "1px solid rgba(255,255,255,0.15)" : "none",
+                }}
               >
-                <span className="text-[#89e3d5] text-base">{badge.icon}</span>
-                <span className="text-xs font-semibold text-white/90 tracking-wide">
+                <span style={{ color: "white", flexShrink: 0 }}>{badge.icon}</span>
+                <span style={{ fontSize: "1.1rem", fontWeight: 600, color: "white", letterSpacing: "0.02em", fontFamily: "'Montserrat', sans-serif" }}>
                   {badge.label}
                 </span>
               </div>
@@ -132,6 +176,7 @@ export default function Hero() {
           </div>
         </div>
       </div>
+
     </section>
   );
 }
