@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Search, CalendarCheck, Smile } from "lucide-react";
 
@@ -6,74 +8,165 @@ const STEPS = [
     icon: Search,
     step: "01",
     title: "Discover Experiences",
-    description:
-      "Browse authentic local experiences by location, category, or theme. Find exactly what excites you.",
+    description: "Browse authentic local experiences by location, category, or theme. Find exactly what excites you.",
   },
   {
     icon: CalendarCheck,
     step: "02",
     title: "Book Instantly",
-    description:
-      "Select your date, confirm your spot, and pay securely — all in a few clicks. No back-and-forth needed.",
+    description: "Select your date, confirm your spot, and pay securely — all in a few clicks. No back-and-forth needed.",
   },
   {
     icon: Smile,
     step: "03",
-    title: "Live the Experience",
-    description:
-      "Show up and immerse yourself. Your local host takes care of the rest. Leave with memories that last.",
+    title: "Live the Experiences",
+    description: "Show up and immerse yourself. Your local host takes care of the rest. Leave with memories that last.",
   },
 ];
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+    <section
+      id="how-it-works"
+      style={{ padding: "5rem 0", backgroundColor: "white" }}
+    >
+      <div style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
 
         {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-[#006f6b] font-bold text-xs uppercase tracking-[0.2em] mb-3">
+        <div style={{ textAlign: "center", maxWidth: "680px", margin: "0 auto 3.5rem" }}>
+          <p style={{
+            color: "#006f6b",
+            fontWeight: 700,
+            fontSize: "0.7rem",
+            textTransform: "uppercase",
+            letterSpacing: "0.2em",
+            marginBottom: "0.75rem",
+            fontFamily: "'Montserrat', sans-serif",
+          }}>
             Simple Process
           </p>
-          <h2
-            className="text-3xl font-black text-[#062626] mb-5"
-            style={{ fontFamily: "'Montserrat', sans-serif" }}
-          >
+          <h2 style={{
+            fontSize: "clamp(1.8rem, 3vw, 2.4rem)",
+            fontWeight: 900,
+            color: "#062626",
+            fontFamily: "'Montserrat', sans-serif",
+            lineHeight: 1.2,
+            marginBottom: "1rem",
+          }}>
             How Plungers works
           </h2>
-          <p className="text-[#062626]/60 text-base leading-relaxed font-medium">
-            From discovery to experience — we make it effortless to connect
-            with local hosts and book something unforgettable.
+          <p style={{
+            color: "rgba(6,38,38,0.55)",
+            fontSize: "0.95rem",
+            lineHeight: 1.7,
+            fontWeight: 500,
+            fontFamily: "'Montserrat', sans-serif",
+          }}>
+            From discovery to experience — we make it effortless to connect with local hosts
+            and book something unforgettable
           </p>
         </div>
 
-        {/* Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Steps Grid */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "1.5rem",
+          marginBottom: "3rem",
+        }}>
           {STEPS.map((step) => {
             const Icon = step.icon;
             return (
               <div
                 key={step.step}
-                className="relative flex flex-col items-center text-center p-10 rounded-2xl border border-[#e0f0ef] hover:border-[#006f6b] hover:shadow-lg transition-all duration-300 group bg-white"
+                style={{
+                  backgroundColor: "white",
+                  border: "1.5px solid #e8eeee",
+                  borderRadius: "20px",
+                  padding: "2.5rem 2rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                  position: "relative",
+                  transition: "all 0.25s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.08)";
+                  e.currentTarget.style.borderColor = "#006f6b";
+                  e.currentTarget.style.transform = "translateY(-4px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.borderColor = "#e8eeee";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
               >
-                {/* Step Number */}
-                <span className="text-[#e0f0ef] font-black text-7xl leading-none mb-4 group-hover:text-[#89e3d5] transition-colors select-none">
-                  {step.step}
-                </span>
+                {/* Step Number — large faded behind icon */}
+                <div style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginTop: "1.5rem",
+                  marginBottom: "1.5rem",
+                  width: "100%",
+                  height: "100px",
+                }}>
+                  {/* Faded number */}
+                  <span style={{
+                    position: "absolute",
+                    fontSize: "5.5rem",
+                    fontWeight: 900,
+                    color: "rgba(0,111,107,0.12)",
+                    fontFamily: "'Montserrat', sans-serif",
+                    lineHeight: 1,
+                    userSelect: "none",
+                    top: "1%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    zIndex: 0,
+                  }}>
+                    {step.step}
+                  </span>
 
-                {/* Icon */}
-                <div className="w-14 h-14 rounded-2xl bg-[#006f6b] flex items-center justify-center mb-6 shadow-md group-hover:bg-[#062626] group-hover:scale-110 transition-all duration-200">
-                  <Icon size={24} className="text-white" />
+                  {/* Icon Container */}
+                  <div style={{
+                    position: "relative",
+                    zIndex: 1,
+                    width: "68px",
+                    height: "68px",
+                    backgroundColor: "#00534d",
+                    borderRadius: "18px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: "0 4px 20px rgba(6,38,38,0.25)",
+                  }}>
+                    <Icon size={26} color="white" />
+                  </div>
                 </div>
 
-                {/* Text */}
-                <h3
-                  className="text-xl font-black text-[#062626] mb-4"
-                  style={{ fontFamily: "'Montserrat', sans-serif" }}
-                >
+                {/* Title */}
+                <h3 style={{
+                  fontSize: "1.1rem",
+                  fontWeight: 800,
+                  color: "#062626",
+                  fontFamily: "'Montserrat', sans-serif",
+                  marginBottom: "0.875rem",
+                  lineHeight: 1.3,
+                }}>
                   {step.title}
                 </h3>
-                <p className="text-[#062626]/60 text-sm leading-relaxed font-medium">
+
+                {/* Description */}
+                <p style={{
+                  fontSize: "0.875rem",
+                  color: "rgba(6,38,38,0.55)",
+                  lineHeight: 1.7,
+                  fontWeight: 500,
+                  fontFamily: "'Montserrat', sans-serif",
+                }}>
                   {step.description}
                 </p>
               </div>
@@ -82,14 +175,36 @@ export default function HowItWorks() {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-14">
+        <div style={{ textAlign: "center" }}>
           <Link
             href="/experiences"
-            className="inline-flex items-center gap-2 bg-[#006f6b] hover:bg-[#00534d] text-white font-black px-10 py-4 rounded-full transition-colors duration-200 shadow-lg hover:shadow-xl tracking-wide"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              border: "1.5px solid #062626",
+              color: "#062626",
+              fontWeight: 600,
+              fontSize: "0.875rem",
+              padding: "0.875rem 2.5rem",
+              borderRadius: "9999px",
+              fontFamily: "'Montserrat', sans-serif",
+              transition: "all 0.2s",
+              textDecoration: "none",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#062626";
+              e.currentTarget.style.color = "white";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#062626";
+            }}
           >
             Start Exploring →
           </Link>
         </div>
+
       </div>
     </section>
   );
