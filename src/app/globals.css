@@ -121,3 +121,13 @@ body {
     padding-right: 24px !important;
   }
 }
+.trust-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 768px) {
+  .trust-badges-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}

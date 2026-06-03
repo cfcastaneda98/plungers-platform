@@ -2,23 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Building2, Mail, Phone, Globe,
-  MapPin, Tag, FileText, ChevronRight,
-  Check, Loader2
+  MapPin, Tag, FileText, Check,
+  Loader2, ArrowRight, Lock, Zap, PiggyBank
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 const CATEGORIES = [
-  "Food & Drink",
-  "Outdoor Adventures",
-  "Arts & Crafts",
-  "Music & Shows",
-  "Photography",
-  "Water Sports",
-  "Nature & Wildlife",
-  "City & Culture",
-  "Other",
+  "Food & Drink", "Outdoor Adventures", "Arts & Crafts",
+  "Music & Shows", "Photography", "Water Sports",
+  "Nature & Wildlife", "City & Culture", "Other",
 ];
 
 const COUNTRIES = [
@@ -28,36 +23,75 @@ const COUNTRIES = [
   "France", "Japan", "Indonesia", "Other",
 ];
 
+const TRUST_BADGES = [
+  { icon: Lock, title: "Secure & Private", desc: "Your data is protected and never shared" },
+  { icon: Zap, title: "Quick Review", desc: "Applications reviewed within 3-5 business days" },
+  { icon: PiggyBank, title: "Keep More Earnings", desc: "Competitive commission rates for all hosts" },
+];
+
 type FormStep = 1 | 2 | 3
 
 interface FormData {
-  // Step 1 — Business Info
   business_name: string
   category: string
   description: string
-  // Step 2 — Contact Info
   email: string
   phone: string
   website: string
-  // Step 3 — Location
   city: string
   country: string
   address: string
 }
 
 const INITIAL_FORM: FormData = {
-  business_name: "",
-  category: "",
-  description: "",
-  email: "",
-  phone: "",
-  website: "",
-  city: "",
-  country: "",
-  address: "",
+  business_name: "", category: "", description: "",
+  email: "", phone: "", website: "",
+  city: "", country: "", address: "",
+}
+
+const STEPS = [
+  { num: 1, label: "Business Info" },
+  { num: 2, label: "Contact" },
+  { num: 3, label: "Location" },
+]
+
+const inputStyle = {
+  width: "100%",
+  paddingLeft: "2.75rem",
+  paddingRight: "1rem",
+  paddingTop: "0.875rem",
+  paddingBottom: "0.875rem",
+  backgroundColor: "#f4f7f7",
+  border: "1.5px solid #e0eeee",
+  borderRadius: "12px",
+  fontSize: "0.875rem",
+  color: "#062626",
+  outline: "none",
+  fontFamily: "'Montserrat', sans-serif",
+  boxSizing: "border-box" as const,
+  transition: "border-color 0.2s",
+}
+
+const labelStyle = {
+  display: "block",
+  fontSize: "0.7rem",
+  fontWeight: 700,
+  color: "#062626",
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.12em",
+  marginBottom: "0.5rem",
+}
+
+const iconStyle = {
+  position: "absolute" as const,
+  left: "14px",
+  top: "50%",
+  transform: "translateY(-50%)",
+  color: "#006f6b",
 }
 
 export default function ApplyClient() {
+  const router = useRouter()
   const [step, setStep] = useState<FormStep>(1)
   const [form, setForm] = useState<FormData>(INITIAL_FORM)
   const [loading, setLoading] = useState(false)
@@ -72,60 +106,32 @@ export default function ApplyClient() {
   function validateStep(): boolean {
     switch (step) {
       case 1:
-        if (!form.business_name.trim()) {
-          setError("Business name is required")
-          return false
-        }
-        if (!form.category) {
-          setError("Please select a category")
-          return false
-        }
-        if (!form.description.trim() || form.description.length < 50) {
-          setError("Please provide a description of at least 50 characters")
-          return false
-        }
+        if (!form.business_name.trim()) { setError("Business name is required"); return false }
+        if (!form.category) { setError("Please select a category"); return false }
+        if (!form.description.trim() || form.description.length < 50) { setError("Please provide a description of at least 50 characters"); return false }
         return true
       case 2:
-        if (!form.email.trim() || !form.email.includes('@')) {
-          setError("Please enter a valid email address")
-          return false
-        }
-        if (!form.phone.trim()) {
-          setError("Phone number is required")
-          return false
-        }
+        if (!form.email.trim() || !form.email.includes('@')) { setError("Please enter a valid email address"); return false }
+        if (!form.phone.trim()) { setError("Phone number is required"); return false }
         return true
       case 3:
-        if (!form.city.trim()) {
-          setError("City is required")
-          return false
-        }
-        if (!form.country) {
-          setError("Please select a country")
-          return false
-        }
+        if (!form.city.trim()) { setError("City is required"); return false }
+        if (!form.country) { setError("Please select a country"); return false }
         return true
-      default:
-        return true
+      default: return true
     }
   }
 
   function handleNext() {
-    if (validateStep()) {
-      setStep(prev => (prev + 1) as FormStep)
-    }
+    if (validateStep()) setStep(prev => (prev + 1) as FormStep)
   }
 
   async function handleSubmit() {
-  if (!validateStep()) return
-
-  setLoading(true)
-  setError("")
-
-  try {
-    const { error: submitError } = await supabase
-      .from('business_applications')
-      .insert([{
+    if (!validateStep()) return
+    setLoading(true)
+    setError("")
+    try {
+      await supabase.from('business_applications').insert([{
         business_name: form.business_name,
         category: form.category,
         description: form.description,
@@ -137,183 +143,247 @@ export default function ApplyClient() {
         address: form.address || null,
         status: 'pending',
       }])
-
-    if (submitError) {
-      console.error('Submit error:', submitError)
+      setSubmitted(true)
+    } catch {
+      console.log('Application data:', form)
+      setSubmitted(true)
+    } finally {
+      setLoading(false)
     }
-
-    // Always show success to user
-    // Data will sync when Supabase is back online
-    setSubmitted(true)
-  } catch {
-    // Still show success — form data is logged
-    console.log('Application data:', form)
-    setSubmitted(true)
-  } finally {
-    setLoading(false)
   }
-}
 
-  // Success State
   if (submitted) {
-    return (
-      <main className="min-h-screen bg-[#f4fafa] flex items-center justify-center px-6 pt-16">
-        <div className="max-w-lg w-full text-center">
-          <div className="w-20 h-20 rounded-full bg-[#006f6b]/10 flex items-center justify-center mx-auto mb-6">
-            <Check size={40} className="text-[#006f6b]" />
-          </div>
-          <h1
-            className="text-3xl font-black text-[#062626] mb-4"
-            style={{ fontFamily: "'Montserrat', sans-serif" }}
-          >
-            Application Submitted!
-          </h1>
-          <p className="text-[#062626]/60 font-medium leading-relaxed mb-8">
-            Thank you for applying to host on Plungers. Our team will review
-            your application and get back to you within 3-5 business days.
-          </p>
-          <div className="bg-white rounded-2xl border border-[#e0f0ef] p-6 mb-8 text-left">
-            <h3 className="font-black text-[#062626] mb-4 text-sm uppercase tracking-wider">
-              What happens next?
-            </h3>
+  return (
+    <main style={{
+      minHeight: "100vh",
+      backgroundColor: "#f4f7f7",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px",
+      paddingTop: "100px",
+      fontFamily: "'Montserrat', sans-serif",
+    }}>
+      <div style={{ maxWidth: "480px", width: "100%", textAlign: "center" }}>
+
+        {/* Check Icon */}
+        <div style={{
+          width: "90px",
+          height: "90px",
+          borderRadius: "50%",
+          backgroundColor: "rgba(0,111,107,0.12)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "0 auto 2rem",
+        }}>
+          <Check size={42} color="#006f6b" strokeWidth={2.5} />
+        </div>
+
+        {/* Title */}
+        <h1 style={{
+          fontSize: "clamp(1.6rem, 4vw, 2rem)",
+          fontWeight: 900,
+          color: "#062626",
+          marginBottom: "1rem",
+          fontFamily: "'Montserrat', sans-serif",
+          lineHeight: 1.2,
+        }}>
+          Application Submitted!
+        </h1>
+
+        {/* Description */}
+        <p style={{
+          color: "rgba(6,38,38,0.6)",
+          fontWeight: 500,
+          lineHeight: 1.7,
+          marginBottom: "2.5rem",
+          fontSize: "0.9rem",
+          maxWidth: "360px",
+          margin: "0 auto 2.5rem",
+        }}>
+          Thank you for applying to host on Plungers. Our team
+          will review your application and get back to you within
+          3-5 business days.
+        </p>
+
+        {/* What happens next */}
+        <div style={{
+          backgroundColor: "white",
+          borderRadius: "20px",
+          border: "1.5px solid #e0eeee",
+          padding: "2rem",
+          marginBottom: "2rem",
+          textAlign: "left",
+          boxShadow: "0 4px 24px rgba(6,38,38,0.05)",
+        }}>
+          <h3 style={{
+            fontWeight: 900,
+            color: "#062626",
+            marginBottom: "1.5rem",
+            fontSize: "1rem",
+            fontFamily: "'Montserrat', sans-serif",
+            textAlign: "center",
+          }}>
+            What happens next?
+          </h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             {[
               "Our team reviews your application",
               "We may reach out for additional information",
               "You'll receive an email with our decision",
               "Once approved, set up your Stripe account to receive payouts",
             ].map((item, i) => (
-              <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
-                <div className="w-6 h-6 rounded-full bg-[#006f6b] text-white text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+              <div key={i} style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+              }}>
+                <div style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  backgroundColor: "#062626",
+                  color: "white",
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  fontFamily: "'Montserrat', sans-serif",
+                }}>
                   {i + 1}
                 </div>
-                <p className="text-sm font-medium text-[#062626]/70">{item}</p>
+                <p style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "rgba(6,38,38,0.7)",
+                  lineHeight: 1.5,
+                }}>
+                  {item}
+                </p>
               </div>
             ))}
           </div>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 bg-[#006f6b] hover:bg-[#00534d] text-white font-black px-8 py-4 rounded-full transition-colors"
-          >
-            Back to Home
-          </Link>
         </div>
-      </main>
-    )
-  }
+
+        {/* Back to Home Button */}
+        <Link
+          href="/"
+          style={{
+            display: "block",
+            width: "100%",
+            backgroundColor: "#062626",
+            color: "white",
+            fontWeight: 700,
+            fontSize: "0.95rem",
+            padding: "1rem",
+            borderRadius: "9999px",
+            textDecoration: "none",
+            fontFamily: "'Montserrat', sans-serif",
+            textAlign: "center",
+            transition: "background-color 0.2s",
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#006f6b"}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#062626"}
+        >
+          Back to Home
+        </Link>
+
+      </div>
+    </main>
+  )
+}
 
   return (
-    <main className="min-h-screen bg-[#f4fafa]">
+    <main style={{ minHeight: "100vh", backgroundColor: "#f4f7f7", fontFamily: "'Montserrat', sans-serif" }}>
 
       {/* Header */}
-      <div className="bg-[#062626] pt-24 pb-12">
-        <div className="max-w-3xl mx-auto px-6 sm:px-10">
-          <p className="text-[#89e3d5] font-bold text-xs uppercase tracking-[0.2em] mb-2">
-            Become a Host
-          </p>
-          <h1
-            className="text-4xl font-black text-white mb-3"
-            style={{ fontFamily: "'Montserrat', sans-serif" }}
-          >
-            List Your Experience
-          </h1>
-          <p className="text-white/60 font-medium">
-            Join our community of local hosts and share your culture with travelers worldwide.
-          </p>
-        </div>
+      <div style={{ backgroundColor: "#062626", paddingTop: "6rem", paddingBottom: "2.5rem", paddingLeft: "80px", paddingRight: "80px" }}>
+        <p style={{ color: "#89e3d5", fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>
+          Become a Host
+        </p>
+        <h1 style={{ fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 900, color: "white", fontFamily: "'Montserrat', sans-serif" }}>
+          List Your Experience
+        </h1>
       </div>
 
       {/* Progress Steps */}
-      <div className="bg-white border-b border-[#e0f0ef] sticky top-16 z-30">
-        <div className="max-w-3xl mx-auto px-6 sm:px-10 py-4">
-          <div className="flex items-center gap-2">
-            {[
-              { num: 1, label: "Business Info" },
-              { num: 2, label: "Contact" },
-              { num: 3, label: "Location" },
-            ].map((s, i) => (
-              <div key={s.num} className="flex items-center gap-2 flex-1">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black transition-all ${
-                      step > s.num
-                        ? "bg-[#006f6b] text-white"
-                        : step === s.num
-                        ? "bg-[#062626] text-white"
-                        : "bg-[#f4fafa] text-[#062626]/40 border border-[#e0f0ef]"
-                    }`}
-                  >
-                    {step > s.num ? <Check size={14} /> : s.num}
-                  </div>
-                  <span
-                    className={`text-xs font-bold hidden sm:block ${
-                      step === s.num
-                        ? "text-[#062626]"
-                        : "text-[#062626]/40"
-                    }`}
-                  >
-                    {s.label}
-                  </span>
+      <div style={{ backgroundColor: "white", borderBottom: "1px solid #e0eeee", padding: "1.25rem 80px", position: "sticky", top: "72px", zIndex: 30 }}>
+        <div style={{ maxWidth: "500px", margin: "0 auto", display: "flex", alignItems: "flex-start", gap: "0" }}>
+          {STEPS.map((s, i) => (
+            <div key={s.num} style={{ display: "flex", alignItems: "flex-start", flex: 1 }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                <div style={{
+                  width: "40px", height: "40px", borderRadius: "50%",
+                  backgroundColor: step > s.num ? "#006f6b" : step === s.num ? "#062626" : "white",
+                  border: step >= s.num ? "none" : "2px solid #d1d5db",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "all 0.3s",
+                }}>
+                  {step > s.num ? (
+                    <Check size={16} color="white" />
+                  ) : (
+                    <span style={{ fontSize: "0.875rem", fontWeight: 700, color: step === s.num ? "white" : "#9ca3af" }}>
+                      {s.num}
+                    </span>
+                  )}
                 </div>
-                {i < 2 && (
-                  <div className={`flex-1 h-0.5 mx-2 ${
-                    step > s.num ? "bg-[#006f6b]" : "bg-[#e0f0ef]"
-                  }`} />
-                )}
+                <span style={{ fontSize: "0.7rem", fontWeight: 600, color: step === s.num ? "#062626" : "#9ca3af", whiteSpace: "nowrap" }}>
+                  {s.label}
+                </span>
               </div>
-            ))}
-          </div>
+              {i < STEPS.length - 1 && (
+                <div style={{ flex: 1, height: "2px", backgroundColor: step > s.num ? "#006f6b" : "#e0eeee", marginTop: "20px", transition: "background-color 0.3s" }} />
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Form */}
-      <div className="max-w-3xl mx-auto px-6 sm:px-10 py-10">
-        <div className="bg-white rounded-2xl border border-[#e0f0ef] shadow-sm overflow-hidden">
+      {/* Form Area */}
+      <div style={{ maxWidth: "720px", margin: "0 auto", padding: "2.5rem 24px 4rem" }}>
 
-          {/* Step 1 — Business Info */}
+        {/* Form Card */}
+        <div style={{ backgroundColor: "white", borderRadius: "20px", border: "1.5px solid #e0eeee", overflow: "hidden", marginBottom: "2rem", boxShadow: "0 4px 24px rgba(6,38,38,0.06)" }}>
+
+          {/* Step 1 */}
           {step === 1 && (
-            <div className="p-8">
-              <h2
-                className="text-2xl font-black text-[#062626] mb-6"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
-              >
+            <div style={{ padding: "2.5rem" }}>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#062626", marginBottom: "2rem", textAlign: "center", fontFamily: "'Montserrat', sans-serif" }}>
                 Tell us about your business
               </h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
 
-              <div className="space-y-5">
                 {/* Business Name */}
                 <div>
-                  <label className="text-xs font-black text-[#062626] uppercase tracking-wider mb-2 block">
-                    Business Name *
-                  </label>
-                  <div className="relative">
-                    <Building2
-                      size={16}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-[#006f6b]"
-                    />
+                  <label style={labelStyle}>Business Name *</label>
+                  <div style={{ position: "relative" }}>
+                    <Building2 size={15} style={iconStyle} />
                     <input
                       type="text"
                       value={form.business_name}
                       onChange={(e) => updateForm('business_name', e.target.value)}
                       placeholder="Your business or experience name"
-                      className="w-full bg-[#f4fafa] border border-[#e0f0ef] rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b] transition-colors"
+                      style={inputStyle}
+                      onFocus={(e) => e.currentTarget.style.borderColor = "#006f6b"}
+                      onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"}
                     />
                   </div>
                 </div>
 
                 {/* Category */}
                 <div>
-                  <label className="text-xs font-black text-[#062626] uppercase tracking-wider mb-2 block">
-                    Experience Category *
-                  </label>
-                  <div className="relative">
-                    <Tag
-                      size={16}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-[#006f6b]"
-                    />
+                  <label style={labelStyle}>Experience Category *</label>
+                  <div style={{ position: "relative" }}>
+                    <Tag size={15} style={iconStyle} />
                     <select
                       value={form.category}
                       onChange={(e) => updateForm('category', e.target.value)}
-                      className="w-full appearance-none bg-[#f4fafa] border border-[#e0f0ef] rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b] transition-colors cursor-pointer"
+                      style={{ ...inputStyle, appearance: "none", cursor: "pointer" }}
+                      onFocus={(e) => e.currentTarget.style.borderColor = "#006f6b"}
+                      onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"}
                     >
                       <option value="">Select a category</option>
                       {CATEGORIES.map((cat) => (
@@ -325,23 +395,20 @@ export default function ApplyClient() {
 
                 {/* Description */}
                 <div>
-                  <label className="text-xs font-black text-[#062626] uppercase tracking-wider mb-2 block">
-                    Describe Your Experience *
-                  </label>
-                  <div className="relative">
-                    <FileText
-                      size={16}
-                      className="absolute left-4 top-4 text-[#006f6b]"
-                    />
+                  <label style={labelStyle}>Describe Your Experience *</label>
+                  <div style={{ position: "relative" }}>
+                    <FileText size={15} style={{ ...iconStyle, top: "16px", transform: "none" }} />
                     <textarea
                       value={form.description}
                       onChange={(e) => updateForm('description', e.target.value)}
                       placeholder="Tell us about the experience you want to offer. What will guests do? What makes it unique? (min. 50 characters)"
                       rows={5}
-                      className="w-full bg-[#f4fafa] border border-[#e0f0ef] rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b] transition-colors resize-none"
+                      style={{ ...inputStyle, paddingTop: "0.875rem", resize: "none" as const }}
+                      onFocus={(e) => e.currentTarget.style.borderColor = "#006f6b"}
+                      onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"}
                     />
                   </div>
-                  <p className="text-xs text-[#062626]/40 font-medium mt-1">
+                  <p style={{ fontSize: "0.72rem", color: "rgba(6,38,38,0.4)", fontWeight: 500, marginTop: "0.25rem" }}>
                     {form.description.length}/50 minimum characters
                   </p>
                 </div>
@@ -349,198 +416,129 @@ export default function ApplyClient() {
             </div>
           )}
 
-          {/* Step 2 — Contact Info */}
+          {/* Step 2 */}
           {step === 2 && (
-            <div className="p-8">
-              <h2
-                className="text-2xl font-black text-[#062626] mb-6"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
-              >
+            <div style={{ padding: "2.5rem" }}>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#062626", marginBottom: "2rem", textAlign: "center", fontFamily: "'Montserrat', sans-serif" }}>
                 Contact information
               </h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
 
-              <div className="space-y-5">
-                {/* Email */}
                 <div>
-                  <label className="text-xs font-black text-[#062626] uppercase tracking-wider mb-2 block">
-                    Business Email *
-                  </label>
-                  <div className="relative">
-                    <Mail
-                      size={16}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-[#006f6b]"
-                    />
-                    <input
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => updateForm('email', e.target.value)}
-                      placeholder="your@email.com"
-                      className="w-full bg-[#f4fafa] border border-[#e0f0ef] rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b] transition-colors"
-                    />
+                  <label style={labelStyle}>Business Email *</label>
+                  <div style={{ position: "relative" }}>
+                    <Mail size={15} style={iconStyle} />
+                    <input type="email" value={form.email} onChange={(e) => updateForm('email', e.target.value)} placeholder="your@email.com" style={inputStyle}
+                      onFocus={(e) => e.currentTarget.style.borderColor = "#006f6b"}
+                      onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"} />
                   </div>
                 </div>
 
-                {/* Phone */}
                 <div>
-                  <label className="text-xs font-black text-[#062626] uppercase tracking-wider mb-2 block">
-                    Phone Number *
-                  </label>
-                  <div className="relative">
-                    <Phone
-                      size={16}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-[#006f6b]"
-                    />
-                    <input
-                      type="tel"
-                      value={form.phone}
-                      onChange={(e) => updateForm('phone', e.target.value)}
-                      placeholder="+1 (555) 000-0000"
-                      className="w-full bg-[#f4fafa] border border-[#e0f0ef] rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b] transition-colors"
-                    />
+                  <label style={labelStyle}>Phone Number *</label>
+                  <div style={{ position: "relative" }}>
+                    <Phone size={15} style={iconStyle} />
+                    <input type="tel" value={form.phone} onChange={(e) => updateForm('phone', e.target.value)} placeholder="+1 (555) 000-0000" style={inputStyle}
+                      onFocus={(e) => e.currentTarget.style.borderColor = "#006f6b"}
+                      onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"} />
                   </div>
                 </div>
 
-                {/* Website */}
                 <div>
-                  <label className="text-xs font-black text-[#062626] uppercase tracking-wider mb-2 block">
-                    Website <span className="text-[#062626]/40 normal-case font-medium">(optional)</span>
-                  </label>
-                  <div className="relative">
-                    <Globe
-                      size={16}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-[#006f6b]"
-                    />
-                    <input
-                      type="url"
-                      value={form.website}
-                      onChange={(e) => updateForm('website', e.target.value)}
-                      placeholder="https://yourwebsite.com"
-                      className="w-full bg-[#f4fafa] border border-[#e0f0ef] rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b] transition-colors"
-                    />
+                  <label style={labelStyle}>Website <span style={{ textTransform: "none", fontWeight: 400, color: "rgba(6,38,38,0.4)" }}>(optional)</span></label>
+                  <div style={{ position: "relative" }}>
+                    <Globe size={15} style={iconStyle} />
+                    <input type="url" value={form.website} onChange={(e) => updateForm('website', e.target.value)} placeholder="https://yourwebsite.com" style={inputStyle}
+                      onFocus={(e) => e.currentTarget.style.borderColor = "#006f6b"}
+                      onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"} />
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Step 3 — Location */}
+          {/* Step 3 */}
           {step === 3 && (
-            <div className="p-8">
-              <h2
-                className="text-2xl font-black text-[#062626] mb-6"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
-              >
+            <div style={{ padding: "2.5rem" }}>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#062626", marginBottom: "2rem", textAlign: "center", fontFamily: "'Montserrat', sans-serif" }}>
                 Where are you located?
               </h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
 
-              <div className="space-y-5">
-                {/* Country */}
                 <div>
-                  <label className="text-xs font-black text-[#062626] uppercase tracking-wider mb-2 block">
-                    Country *
-                  </label>
-                  <div className="relative">
-                    <Globe
-                      size={16}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-[#006f6b]"
-                    />
-                    <select
-                      value={form.country}
-                      onChange={(e) => updateForm('country', e.target.value)}
-                      className="w-full appearance-none bg-[#f4fafa] border border-[#e0f0ef] rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b] transition-colors cursor-pointer"
-                    >
+                  <label style={labelStyle}>Country *</label>
+                  <div style={{ position: "relative" }}>
+                    <Globe size={15} style={iconStyle} />
+                    <select value={form.country} onChange={(e) => updateForm('country', e.target.value)} style={{ ...inputStyle, appearance: "none", cursor: "pointer" }}
+                      onFocus={(e) => e.currentTarget.style.borderColor = "#006f6b"}
+                      onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"}>
                       <option value="">Select a country</option>
-                      {COUNTRIES.map((country) => (
-                        <option key={country} value={country}>{country}</option>
-                      ))}
+                      {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                 </div>
 
-                {/* City */}
                 <div>
-                  <label className="text-xs font-black text-[#062626] uppercase tracking-wider mb-2 block">
-                    City *
-                  </label>
-                  <div className="relative">
-                    <MapPin
-                      size={16}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-[#006f6b]"
-                    />
-                    <input
-                      type="text"
-                      value={form.city}
-                      onChange={(e) => updateForm('city', e.target.value)}
-                      placeholder="Your city"
-                      className="w-full bg-[#f4fafa] border border-[#e0f0ef] rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b] transition-colors"
-                    />
+                  <label style={labelStyle}>City *</label>
+                  <div style={{ position: "relative" }}>
+                    <MapPin size={15} style={iconStyle} />
+                    <input type="text" value={form.city} onChange={(e) => updateForm('city', e.target.value)} placeholder="Your city" style={inputStyle}
+                      onFocus={(e) => e.currentTarget.style.borderColor = "#006f6b"}
+                      onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"} />
                   </div>
                 </div>
 
-                {/* Address */}
                 <div>
-                  <label className="text-xs font-black text-[#062626] uppercase tracking-wider mb-2 block">
-                    Address <span className="text-[#062626]/40 normal-case font-medium">(optional)</span>
-                  </label>
-                  <div className="relative">
-                    <MapPin
-                      size={16}
-                      className="absolute left-4 top-4 text-[#006f6b]"
-                    />
-                    <textarea
-                      value={form.address}
-                      onChange={(e) => updateForm('address', e.target.value)}
-                      placeholder="Street address or general area"
-                      rows={3}
-                      className="w-full bg-[#f4fafa] border border-[#e0f0ef] rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b] transition-colors resize-none"
-                    />
+                  <label style={labelStyle}>Address <span style={{ textTransform: "none", fontWeight: 400, color: "rgba(6,38,38,0.4)" }}>(optional)</span></label>
+                  <div style={{ position: "relative" }}>
+                    <MapPin size={15} style={{ ...iconStyle, top: "16px", transform: "none" }} />
+                    <textarea value={form.address} onChange={(e) => updateForm('address', e.target.value)} placeholder="Street address or general area" rows={3} style={{ ...inputStyle, paddingTop: "0.875rem", resize: "none" as const }}
+                      onFocus={(e) => e.currentTarget.style.borderColor = "#006f6b"}
+                      onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"} />
                   </div>
                 </div>
 
                 {/* Summary */}
-                <div className="bg-[#f4fafa] rounded-2xl border border-[#e0f0ef] p-5">
-                  <h3 className="text-xs font-black text-[#062626] uppercase tracking-wider mb-4">
+                <div style={{ backgroundColor: "#f4f7f7", borderRadius: "12px", border: "1.5px solid #e0eeee", padding: "1.25rem" }}>
+                  <h4 style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#062626", marginBottom: "1rem" }}>
                     Application Summary
-                  </h3>
-                  <div className="space-y-2">
-                    {[
-                      { label: "Business", value: form.business_name },
-                      { label: "Category", value: form.category },
-                      { label: "Email", value: form.email },
-                      { label: "Phone", value: form.phone },
-                    ].map((item) => (
-                      <div key={item.label} className="flex justify-between text-sm">
-                        <span className="text-[#062626]/50 font-medium">{item.label}</span>
-                        <span className="font-bold text-[#062626]">{item.value}</span>
-                      </div>
-                    ))}
-                  </div>
+                  </h4>
+                  {[
+                    { label: "Business", value: form.business_name },
+                    { label: "Category", value: form.category },
+                    { label: "Email", value: form.email },
+                    { label: "Phone", value: form.phone },
+                  ].map((item) => (
+                    <div key={item.label} style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                      <span style={{ fontSize: "0.8rem", color: "rgba(6,38,38,0.5)", fontWeight: 500 }}>{item.label}</span>
+                      <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#062626" }}>{item.value}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Error Message */}
+          {/* Error */}
           {error && (
-            <div className="mx-8 mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-              <p className="text-red-600 text-sm font-medium">{error}</p>
+            <div style={{ margin: "0 2.5rem 1rem", padding: "0.75rem 1rem", backgroundColor: "#fef2f2", border: "1px solid #fecaca", borderRadius: "10px" }}>
+              <p style={{ color: "#dc2626", fontSize: "0.8rem", fontWeight: 500 }}>{error}</p>
             </div>
           )}
 
-          {/* Navigation Buttons */}
-          <div className="px-8 pb-8 flex items-center justify-between">
+          {/* Navigation */}
+          <div style={{ padding: "1.25rem 2.5rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             {step > 1 ? (
               <button
                 onClick={() => setStep(prev => (prev - 1) as FormStep)}
-                className="px-6 py-3 rounded-xl border border-[#e0f0ef] text-[#062626] font-bold text-sm hover:border-[#006f6b] transition-colors"
+                style={{ background: "none", border: "1.5px solid #e0eeee", borderRadius: "9999px", padding: "0.75rem 1.75rem", fontSize: "0.875rem", fontWeight: 600, color: "#062626", cursor: "pointer", fontFamily: "'Montserrat', sans-serif", transition: "all 0.2s" }}
+                onMouseEnter={(e) => e.currentTarget.style.borderColor = "#006f6b"}
+                onMouseLeave={(e) => e.currentTarget.style.borderColor = "#e0eeee"}
               >
                 ← Back
               </button>
             ) : (
-              <Link
-                href="/"
-                className="px-6 py-3 rounded-xl border border-[#e0f0ef] text-[#062626] font-bold text-sm hover:border-[#006f6b] transition-colors"
-              >
+              <Link href="/" style={{ background: "none", border: "none", fontSize: "0.875rem", fontWeight: 600, color: "rgba(6,38,38,0.5)", cursor: "pointer", fontFamily: "'Montserrat', sans-serif", textDecoration: "none" }}>
                 Cancel
               </Link>
             )}
@@ -548,51 +546,49 @@ export default function ApplyClient() {
             {step < 3 ? (
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 bg-[#006f6b] hover:bg-[#00534d] text-white font-black px-8 py-3 rounded-xl transition-colors"
+                style={{ backgroundColor: "#062626", color: "white", border: "none", borderRadius: "9999px", padding: "0.875rem 2.25rem", fontSize: "0.9rem", fontWeight: 700, cursor: "pointer", fontFamily: "'Montserrat', sans-serif", display: "flex", alignItems: "center", gap: "0.5rem", transition: "background-color 0.2s" }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#006f6b"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#062626"}
               >
-                Continue
-                <ChevronRight size={16} />
+                Continue <ArrowRight size={16} />
               </button>
             ) : (
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="flex items-center gap-2 bg-[#006f6b] hover:bg-[#00534d] disabled:opacity-60 text-white font-black px-8 py-3 rounded-xl transition-colors"
+                style={{ backgroundColor: "#062626", color: "white", border: "none", borderRadius: "9999px", padding: "0.875rem 2.25rem", fontSize: "0.9rem", fontWeight: 700, cursor: "pointer", fontFamily: "'Montserrat', sans-serif", display: "flex", alignItems: "center", gap: "0.5rem", opacity: loading ? 0.7 : 1, transition: "background-color 0.2s" }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#006f6b"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#062626"}
               >
-                {loading ? (
-                  <>
-                    <Loader2 size={16} className="animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    Submit Application
-                    <Check size={16} />
-                  </>
-                )}
+                {loading ? <><Loader2 size={16} /> Submitting...</> : <>Submit Application <Check size={16} /></>}
               </button>
             )}
           </div>
         </div>
 
         {/* Trust Badges */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-          {[
-            { icon: "🔒", title: "Secure & Private", desc: "Your data is protected and never shared" },
-            { icon: "⚡", title: "Quick Review", desc: "Applications reviewed within 3-5 business days" },
-            { icon: "💰", title: "Keep More Earnings", desc: "Competitive commission rates for all hosts" },
-          ].map((badge) => (
-            <div
-              key={badge.title}
-              className="bg-white rounded-2xl border border-[#e0f0ef] p-5 text-center"
-            >
-              <span className="text-2xl mb-2 block">{badge.icon}</span>
-              <h4 className="font-black text-[#062626] text-sm mb-1">{badge.title}</h4>
-              <p className="text-xs text-[#062626]/50 font-medium">{badge.desc}</p>
-            </div>
-          ))}
+        <div className="trust-badges-grid" style={{ gap: "1rem" }}>
+          {TRUST_BADGES.map((badge) => {
+            const Icon = badge.icon;
+            return (
+              <div
+                key={badge.title}
+                style={{ backgroundColor: "white", borderRadius: "16px", border: "1.5px solid #e0eeee", padding: "1.75rem 1.5rem", textAlign: "center" }}
+              >
+                <div style={{ width: "52px", height: "52px", borderRadius: "14px", backgroundColor: "#062626", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1rem" }}>
+                  <Icon size={22} color="white" />
+                </div>
+                <h4 style={{ fontSize: "0.9rem", fontWeight: 800, color: "#062626", marginBottom: "0.4rem", fontFamily: "'Montserrat', sans-serif" }}>
+                  {badge.title}
+                </h4>
+                <p style={{ fontSize: "0.78rem", color: "rgba(6,38,38,0.5)", fontWeight: 500, lineHeight: 1.5 }}>
+                  {badge.desc}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </main>
-  )
+  );
 }
