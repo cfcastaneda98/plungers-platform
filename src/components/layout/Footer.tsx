@@ -70,16 +70,12 @@ export default function Footer() {
 
       {/* CTA Banner */}
       <div style={{ padding: "2rem 80px", backgroundColor: "#ffffff"}}>
-        <div style={{
-          position: "relative",
-          borderRadius: "20px",
-          overflow: "hidden",
-          padding: "3rem 3.5rem",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "2rem",
-        }}>
+        <div className="footer-cta" style={{
+            position: "relative",
+            borderRadius: "20px",
+            overflow: "hidden",
+            gap: "2rem",
+          }}>
           {/* Background Image */}
           <div style={{
             position: "absolute",
@@ -144,17 +140,8 @@ export default function Footer() {
       </div>
 
       {/* Main Footer */}
-      <div style={{
-        maxWidth: "1280px",
-        margin: "0 auto",
-        padding: "3.5rem 80px 2.5rem",
-      }}>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1.2fr 1fr 1fr 1fr",
-          gap: "3rem",
-        }}>
-
+      <div className="section-pad" style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
+        <div className="footer-grid" style={{ gap: "2rem" }}>
           {/* Brand Column */}
           <div>
             <Link href="/" style={{ display: "block", marginBottom: "1.25rem" }}>
@@ -219,6 +206,7 @@ export default function Footer() {
                 fontSize: "0.75rem",
                 textTransform: "uppercase",
                 letterSpacing: "0.12em",
+                marginTop: "1.25rem",
                 marginBottom: "1.25rem",
                 fontFamily: "'Montserrat', sans-serif",
               }}>
@@ -250,16 +238,13 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div style={{
-        borderTop: "1px solid rgba(255,255,255,0.08)",
-        maxWidth: "1280px",
-        margin: "0 auto",
-        padding: "1.25rem 80px",
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr 1fr",
-        alignItems: "center",
-      }}>
+      <div className="footer-bottom" style={{
+          borderTop: "1px solid rgba(255,255,255,0.08)",
+          maxWidth: "1280px",
+          margin: "0 auto",
+          padding: "1.25rem 24px",
+          alignItems: "center",
+        }}>
         {/* Left — Legal Links */}
         <div style={{ display: "flex", gap: "1.5rem" }}>
           {["Privacy Policy", "Terms of Service"].map((label) => (

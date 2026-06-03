@@ -116,7 +116,7 @@ function CategoryCard({ cat }: { cat: typeof CATEGORIES[0] }) {
 export default function Categories() {
   return (
     <section style={{ padding: "5rem 0", backgroundColor: "white" }}>
-      <div style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
+      <div className="section-pad" style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
 
         {/* Header */}
         <div style={{ marginBottom: "3rem" }}>
@@ -142,12 +142,7 @@ export default function Categories() {
           </h2>
         </div>
 
-        {/* 4x2 Grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "1.25rem",
-        }}>
+        <div className="categories-grid" style={{ gap: "1.25rem" }}>
           {CATEGORIES.map((cat) => (
             <CategoryCard key={cat.slug} cat={cat} />
           ))}

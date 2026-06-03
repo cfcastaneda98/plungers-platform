@@ -80,7 +80,6 @@ export default function Navbar() {
 
             {/* Divider */}
             <div className={`w-px h-5 ${scrolled ? "bg-[#062626]/20" : "bg-white/30"}`} />
-
             {/* Auth Actions */}
             {user ? (
               <div className="flex items-center gap-6">
@@ -156,7 +155,7 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {menuOpen && (
-          <div className="md:hidden bg-white border-t border-[#e0f0ef] py-6 px-2 flex flex-col gap-1">
+          <div className="md:hidden bg-white border-t border-[#e0f0ef] py-6 px-6 flex flex-col gap-1">
             {[
               { label: "Experiences", href: "/experiences" },
               { label: "How It Works", href: "/#how-it-works" },
@@ -165,7 +164,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[#062626] font-medium py-3 px-4 rounded-xl hover:bg-[#f4fafa] transition-colors"
+                className="text-[#062626] font-medium py-3 px-5 rounded-xl hover:bg-[#f4fafa] transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 {link.label}
@@ -199,7 +198,7 @@ export default function Navbar() {
                 </Link>
                 <Link
                   href="/apply"
-                  className="bg-[#006f6b] text-white text-center font-semibold px-6 py-3 rounded-full mt-2 mx-4 hover:bg-[#00534d] transition-colors"
+                  className="bg-[#006f6b] text-white text-center font-semibold px-6 py-3.5 rounded-full mt-2 hover:bg-[#00534d] transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
                   List Your Experience

@@ -30,7 +30,7 @@ export default function HowItWorks() {
       id="how-it-works"
       style={{ padding: "5rem 0", backgroundColor: "white" }}
     >
-      <div style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
+      <div className="section-pad" style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
 
         {/* Header */}
         <div style={{ textAlign: "center", maxWidth: "680px", margin: "0 auto 3.5rem" }}>
@@ -67,13 +67,7 @@ export default function HowItWorks() {
           </p>
         </div>
 
-        {/* Steps Grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "1.5rem",
-          marginBottom: "3rem",
-        }}>
+        <div className="steps-grid" style={{ gap: "1.5rem", marginBottom: "3rem" }}>
           {STEPS.map((step) => {
             const Icon = step.icon;
             return (

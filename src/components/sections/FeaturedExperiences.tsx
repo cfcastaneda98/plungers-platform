@@ -181,7 +181,7 @@ export default function FeaturedExperiences({ experiences }: FeaturedExperiences
   if (!experiences || experiences.length === 0) {
     return (
       <section style={{ padding: "5rem 0", backgroundColor: "white" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px", textAlign: "center" }}>
+        <div className="section-pad" style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
           <p style={{ color: "rgba(6,38,38,0.4)", fontWeight: 500 }}>
             No featured experiences available yet.
           </p>
@@ -192,7 +192,7 @@ export default function FeaturedExperiences({ experiences }: FeaturedExperiences
 
   return (
     <section style={{ padding: "5rem 0", backgroundColor: "white" }}>
-      <div style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
+      <div className="section-pad" style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
 
         {/* Header */}
         <div style={{ marginBottom: "2.5rem" }}>
@@ -218,12 +218,7 @@ export default function FeaturedExperiences({ experiences }: FeaturedExperiences
           </h2>
         </div>
 
-        {/* Cards Grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "1.25rem",
-        }}>
+        <div className="experiences-grid" style={{ gap: "1.25rem" }}>
           {experiences.map((exp) => (
             <ExperienceCard key={exp.id} exp={exp} />
           ))}

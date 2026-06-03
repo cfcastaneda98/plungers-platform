@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
@@ -45,7 +45,15 @@ const TRUST_BADGES = [
 
 export default function Hero() {
   const [search, setSearch] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const handleSearch = () => {
     router.push(
@@ -59,65 +67,100 @@ export default function Hero() {
     if (e.key === "Enter") handleSearch();
   };
 
+  const sidePadding = isMobile ? "24px" : "80px";
+
   return (
     <section style={{ position: "relative", minHeight: "92vh", display: "flex", flexDirection: "column" }}>
 
       {/* Background */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: "url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1920&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      />
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundImage: "url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1920&q=80')",
+        backgroundSize: "cover", backgroundPosition: "center",
+      }} />
 
-      {/* Gradient Overlay */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "linear-gradient(to right, rgba(6,38,38,0.88) 0%, rgba(6,38,38,0.65) 50%, rgba(0,111,107,0.3) 100%)",
-        }}
-      />
+      {/* Overlay */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: "linear-gradient(to right, rgba(6,38,38,0.88) 0%, rgba(6,38,38,0.65) 50%, rgba(0,111,107,0.3) 100%)",
+      }} />
 
-      {/* Main Content */}
+      {/* Content */}
       <div style={{ position: "relative", zIndex: 10, flex: 1, display: "flex", alignItems: "center" }}>
-        <div style={{ width: "100%", maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "300px", paddingTop: "150px", paddingBottom: "40px" }}>
+        <div style={{
+          width: "100%",
+          maxWidth: "1280px",
+          margin: "0 auto",
+          paddingLeft: sidePadding,
+          paddingRight: sidePadding,
+          paddingTop: isMobile ? "100px" : "120px",
+          paddingBottom: "40px",
+        }}>
 
           {/* Eyebrow */}
-          <p style={{ color: "#89e3d5", fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "1.25rem" }}>
+          <p style={{
+            color: "#89e3d5", fontWeight: 700,
+            fontSize: "0.7rem", textTransform: "uppercase",
+            letterSpacing: "0.2em", marginBottom: "1.25rem",
+            fontFamily: "'Montserrat', sans-serif",
+          }}>
             Plunge Into A World Of Change
           </p>
 
           {/* Headline */}
-          <h1 style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "clamp(2.4rem, 4vw, 3.2rem)", fontWeight: 900, color: "white", lineHeight: 1.15, marginBottom: "1.25rem" }}>
+          <h1 style={{
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: isMobile ? "2.1rem" : "clamp(2.4rem, 4vw, 3.2rem)",
+            fontWeight: 900, color: "white",
+            lineHeight: 1.15, marginBottom: "1.25rem",
+            paddingRight: isMobile ? "100px" : "200px",
+          }}>
             Authentic experiences,{" "}
             <span style={{ color: "#89e3d5" }}>wherever</span> you are
           </h1>
 
           {/* Subheadline */}
-          <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "1rem", lineHeight: 1.7, marginBottom: "2.5rem", maxWidth: "520px", fontWeight: 500 }}>
+          <p style={{
+            color: "rgba(255,255,255,0.7)",
+            fontSize: isMobile ? "0.875rem" : "1rem",
+            lineHeight: 1.7, marginBottom: "2rem",
+            maxWidth: "520px", fontWeight: 500,
+            fontFamily: "'Montserrat', sans-serif",
+          }}>
             Connect with local hosts offering food tours, artisan workshops,
             outdoor adventures, and more.
-            <br/> <br/>
-            Explore. Connect. Transform.
           </p>
 
           {/* Search Bar */}
-          <div style={{ display: "flex", alignItems: "center", backgroundColor: "white", borderRadius: "9999px", boxShadow: "0 4px 32px rgba(0,0,0,0.22)", overflow: "hidden", width: "100%", maxWidth: "680px" }}>
-            <div style={{ display: "flex", alignItems: "center", paddingLeft: "1.5rem", color: "#9ca3af", flexShrink: 0 }}>
-              <Search size={18} />
-            </div>
+          <div style={{
+            display: "flex", alignItems: "center",
+            backgroundColor: "white",
+            borderRadius: "9999px",
+            boxShadow: "0 4px 32px rgba(0,0,0,0.22)",
+            overflow: "hidden",
+            width: "100%",
+            maxWidth: isMobile ? "100%" : "680px",
+          }}>
+            {!isMobile && (
+              <div style={{ display: "flex", alignItems: "center", paddingLeft: "1.5rem", color: "#9ca3af", flexShrink: 0 }}>
+                <Search size={18} />
+              </div>
+            )}
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="What experience are you looking for?"
-              style={{ flex: 1, padding: "1.25rem 1rem", fontSize: "0.9rem", color: "#374151", outline: "none", background: "transparent", fontWeight: 500, fontFamily: "'Montserrat', sans-serif" }}
+              style={{
+                flex: 1,
+                padding: isMobile ? "1rem 1rem" : "1.25rem 1rem",
+                fontSize: "0.875rem",
+                color: "#374151", outline: "none",
+                background: "transparent", fontWeight: 500,
+                fontFamily: "'Montserrat', sans-serif",
+                minWidth: 0,
+              }}
             />
             <button
               onClick={handleSearch}
@@ -125,18 +168,16 @@ export default function Hero() {
                 backgroundColor: "#006f6b",
                 borderRadius: "9999px",
                 margin: "6px",
-                paddingLeft: "2rem",
-                paddingRight: "2rem",
-                paddingTop: "1rem",
-                paddingBottom: "1rem",
-                color: "white",
-                fontWeight: 700,
-                fontSize: "0.875rem",
-                whiteSpace: "nowrap",
+                paddingLeft: isMobile ? "1.25rem" : "2rem",
+                paddingRight: isMobile ? "1.25rem" : "2rem",
+                paddingTop: isMobile ? "0.75rem" : "1rem",
+                paddingBottom: isMobile ? "0.75rem" : "1rem",
+                color: "white", fontWeight: 700,
+                fontSize: "0.875rem", whiteSpace: "nowrap",
                 transition: "background-color 0.2s",
-                border: "none",
-                cursor: "pointer",
+                border: "none", cursor: "pointer",
                 fontFamily: "'Montserrat', sans-serif",
+                flexShrink: 0,
               }}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#00534d")}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#006f6b")}
@@ -144,31 +185,46 @@ export default function Hero() {
               Search
             </button>
           </div>
-
         </div>
       </div>
 
-      {/* Trust Badges Bar — Civitatis style */}
-      <div style={{ position: "relative", zIndex: 10, backgroundColor: "rgba(0, 0, 0, 0)", borderTop: "0px solid rgba(255,255,255,0.1)" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>
+      {/* Trust Badges */}
+      <div style={{
+        position: "relative", zIndex: 10,
+        backgroundColor: "rgba(0, 0, 0, 0)",
+        borderTop: "1px solid rgba(255, 255, 255, 0)",
+      }}>
+        <div style={{
+          maxWidth: "1280px", margin: "0 auto",
+          paddingLeft: sidePadding, paddingRight: sidePadding,
+        }}>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+          }}>
             {TRUST_BADGES.map((badge, index) => (
               <div
                 key={badge.label}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "1.75rem",
-                  color: "white",
-                  paddingTop: "1.25rem",
-                  paddingBottom: "1.25rem",
-                  paddingLeft: index === 0 ? "0" : "2rem",
-                  paddingRight: index === 3 ? "0" : "2rem",
-                  borderRight: index < 3 ? "1px solid rgba(255,255,255,0.15)" : "none",
+                  display: "flex", alignItems: "center",
+                  gap: "0.75rem", color: "white",
+                  paddingTop: "1rem", paddingBottom: "1rem",
+                  paddingLeft: isMobile ? "0.5rem" : (index === 0 ? "0" : "1.5rem"),
+                  paddingRight: isMobile ? "0.5rem" : (index === 3 ? "0" : "1.5rem"),
+                  borderRight: isMobile
+                    ? (index % 2 === 0 ? "1px solid rgba(255,255,255,0.15)" : "none")
+                    : (index < 3 ? "1px solid rgba(255,255,255,0.15)" : "none"),
+                  borderBottom: isMobile && index < 2
+                    ? "1px solid rgba(255,255,255,0.15)"
+                    : "none",
                 }}
               >
                 <span style={{ color: "white", flexShrink: 0 }}>{badge.icon}</span>
-                <span style={{ fontSize: "1.1rem", fontWeight: 600, color: "white", letterSpacing: "0.02em", fontFamily: "'Montserrat', sans-serif" }}>
+                <span style={{
+                  fontSize: isMobile ? "0.9rem" : "1.1rem",
+                  fontWeight: 600, color: "white",
+                  fontFamily: "'Montserrat', sans-serif",
+                }}>
                   {badge.label}
                 </span>
               </div>
@@ -176,7 +232,6 @@ export default function Hero() {
           </div>
         </div>
       </div>
-
     </section>
   );
 }
