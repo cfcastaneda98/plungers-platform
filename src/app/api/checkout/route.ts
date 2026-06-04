@@ -42,26 +42,32 @@ export async function POST(request: NextRequest) {
     const total = subtotal + platformFee
 
     // Create pending booking in database
-    const { data: booking, error: bookingError } = await supabase
-      .from('bookings')
-      .insert([{
-        experience_id: experienceId,
-        traveler_id: travelerId || '00000000-0000-0000-0000-000000000001',
-        business_id: experience.business_id,
-        status: 'pending',
-        guests,
-        booking_date: bookingDate,
-        booking_time: bookingTime,
-        total_amount: total,
-        currency: 'USD',
-        platform_fee: platformFee,
-        host_payout: subtotal * 0.9,
-      }])
-      .select()
-      .single()
+    // Only create booking record if we have a real authenticated user
+    let booking = null
+    if (travelerId) {
+      const { data: bookingData, error: bookingError } = await supabase
+        .from('bookings')
+        .insert([{
+          experience_id: experienceId,
+          traveler_id: travelerId,
+          business_id: experience.business_id,
+          status: 'pending',
+          guests,
+          booking_date: bookingDate,
+          booking_time: bookingTime,
+          total_amount: total,
+          currency: 'USD',
+          platform_fee: platformFee,
+          host_payout: subtotal * 0.9,
+        }])
+        .select()
+        .single()
 
-    if (bookingError) {
-      console.error('Booking error:', bookingError)
+      if (bookingError) {
+        console.error('Booking error:', bookingError)
+      } else {
+        booking = bookingData
+      }
     }
 
     // Create Stripe checkout session

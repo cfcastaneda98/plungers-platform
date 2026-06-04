@@ -4,9 +4,11 @@ import { stripe } from "@/lib/stripe";
 
 async function getSessionDetails(sessionId: string) {
   try {
+    if (!sessionId || !sessionId.startsWith('cs_')) return null
     const session = await stripe.checkout.sessions.retrieve(sessionId)
     return session
-  } catch {
+  } catch (error) {
+    console.error('Failed to retrieve session:', error)
     return null
   }
 }
