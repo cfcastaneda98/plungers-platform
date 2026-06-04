@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Search, SlidersHorizontal, MapPin,
-  Clock, Star, X, ChevronDown
+  Clock, Star, X, ChevronDown, Map
 } from "lucide-react";
 import { Experience } from "@/lib/types";
-import dynamic from "next/dynamic"
+import dynamic from "next/dynamic";
 
 const ExperienceMap = dynamic(
   () => import("@/components/ui/ExperienceMap"),
@@ -34,14 +34,6 @@ const SORT_OPTIONS = [
   { label: "Price: High to Low", value: "price_desc" },
 ];
 
-function formatDuration(minutes: number): string {
-  if (minutes < 60) return `${minutes} min`
-  const hours = Math.floor(minutes / 60)
-  const remaining = minutes % 60
-  if (remaining === 0) return `${hours} hour${hours > 1 ? 's' : ''}`
-  return `${hours}h ${remaining}min`
-}
-
 const CATEGORY_IMAGES: { [key: string]: string } = {
   'Food & Drink': 'https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?w=600&q=80',
   'Outdoor Adventures': 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=600&q=80',
@@ -49,6 +41,14 @@ const CATEGORY_IMAGES: { [key: string]: string } = {
   'Music & Shows': 'https://images.unsplash.com/photo-1545959570-a94084071b5d?w=600&q=80',
   'Water Sports': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80',
   'default': 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
+}
+
+function formatDuration(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  const remaining = minutes % 60
+  if (remaining === 0) return `${hours} hour${hours > 1 ? 's' : ''}`
+  return `${hours}h ${remaining}min`
 }
 
 interface Props {
@@ -63,7 +63,6 @@ interface Props {
     sort?: string
   }
 }
-
 
 export default function ExperiencesClient({
   initialExperiences,
@@ -81,7 +80,6 @@ export default function ExperiencesClient({
 
   function updateParams(updates: Record<string, string>) {
     const params = new URLSearchParams()
-
     const current = {
       search: searchParams.search || "",
       category: searchParams.category || "",
@@ -91,11 +89,9 @@ export default function ExperiencesClient({
       sort: searchParams.sort || "",
       ...updates,
     }
-
     Object.entries(current).forEach(([key, value]) => {
       if (value) params.set(key, value)
     })
-
     router.push(`/experiences?${params.toString()}`)
   }
 
@@ -116,94 +112,156 @@ export default function ExperiencesClient({
     searchParams.min_price || searchParams.max_price || searchParams.search
 
   return (
-    <main className="min-h-screen bg-[#f4fafa]">
+    <main style={{ minHeight: "100vh", backgroundColor: "#f4f7f7", fontFamily: "'Montserrat', sans-serif" }}>
 
       {/* Page Header */}
-      <div className="bg-[#062626] pt-24 pb-10">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-          <p className="text-[#89e3d5] font-bold text-xs uppercase tracking-[0.2em] mb-2">
-            Explore
-          </p>
-          <h1
-            className="text-4xl font-black text-white mb-6"
-            style={{ fontFamily: "'Montserrat', sans-serif" }}
-          >
-            All Experiences
-          </h1>
+      <div style={{ backgroundColor: "#062626", paddingTop: "6rem", paddingBottom: "2.5rem", paddingLeft: "80px", paddingRight: "80px" }}>
+        <p style={{ color: "#89e3d5", fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>
+          Explore
+        </p>
+        <h1 style={{ fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 900, color: "white", fontFamily: "'Montserrat', sans-serif", marginBottom: "1.75rem" }}>
+          All Experiences
+        </h1>
 
-          {/* Search Bar */}
-          <div className="flex items-center bg-white rounded-full shadow-lg overflow-hidden max-w-2xl">
-            <div className="flex items-center pl-5 text-gray-400">
-              <Search size={18} />
-            </div>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Search experiences, cities, categories..."
-              className="flex-1 px-4 py-4 text-gray-700 text-sm outline-none bg-transparent font-medium"
-            />
-            {search && (
-              <button
-                onClick={() => { setSearch(""); updateParams({ search: "" }) }}
-                className="pr-3 text-gray-400 hover:text-gray-600"
-              >
-                <X size={16} />
-              </button>
-            )}
-            <button
-              onClick={handleSearch}
-              className="bg-[#006f6b] hover:bg-[#00534d] text-white font-bold text-sm px-8 py-4 rounded-full m-1.5 transition-colors"
-            >
-              Search
-            </button>
+        {/* Search Bar */}
+        <div style={{ display: "flex", alignItems: "center", backgroundColor: "white", borderRadius: "9999px", boxShadow: "0 4px 24px rgba(0,0,0,0.15)", overflow: "hidden", maxWidth: "680px" }}>
+          <div style={{ display: "flex", alignItems: "center", paddingLeft: "1.5rem", color: "#9ca3af", flexShrink: 0 }}>
+            <Search size={18} />
           </div>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Search experiences, cities, categories..."
+            style={{
+              flex: 1, padding: "1.1rem 1rem",
+              fontSize: "0.875rem", color: "#374151",
+              outline: "none", background: "transparent",
+              fontWeight: 500, fontFamily: "'Montserrat', sans-serif",
+              minWidth: 0,
+            }}
+          />
+          {search && (
+            <button
+              onClick={() => { setSearch(""); updateParams({ search: "" }) }}
+              style={{ background: "none", border: "none", cursor: "pointer", paddingRight: "0.75rem", color: "#9ca3af", display: "flex", alignItems: "center" }}
+            >
+              <X size={16} />
+            </button>
+          )}
+          <button
+            onClick={handleSearch}
+            style={{
+              backgroundColor: "#006f6b",
+              borderRadius: "9999px",
+              margin: "6px",
+              paddingLeft: "1.75rem",
+              paddingRight: "1.75rem",
+              paddingTop: "0.875rem",
+              paddingBottom: "0.875rem",
+              color: "white", fontWeight: 700,
+              fontSize: "0.875rem", whiteSpace: "nowrap",
+              border: "none", cursor: "pointer",
+              fontFamily: "'Montserrat', sans-serif",
+              flexShrink: 0,
+              transition: "background-color 0.2s",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#00534d"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#006f6b"}
+          >
+            Search
+          </button>
         </div>
       </div>
 
-      {/* Category Pills */}
-      <div className="bg-white border-b border-[#e0f0ef] sticky top-16 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="flex items-center gap-2 py-4 overflow-x-auto scrollbar-hide">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.slug}
-                onClick={() => updateParams({ category: cat.slug })}
-                className={`shrink-0 px-5 py-2 rounded-full text-sm font-bold transition-all duration-200 ${
-                  activeCategory === cat.slug
-                    ? "bg-[#006f6b] text-white shadow-md"
-                    : "bg-[#f4fafa] text-[#062626] hover:bg-[#e0f0ef] border border-[#e0f0ef]"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+      {/* Category Pills + Filters Bar */}
+      <div style={{
+        backgroundColor: "white",
+        borderBottom: "1px solid #e0eeee",
+        position: "sticky", top: "72px", zIndex: 30,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+      }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingTop: "0.875rem", paddingBottom: "0.875rem", overflowX: "auto" }}>
+
+            {/* Category Pills */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flex: 1, overflowX: "auto" }}>
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.slug}
+                  onClick={() => updateParams({ category: cat.slug })}
+                  style={{
+                    flexShrink: 0,
+                    padding: "0.5rem 1.25rem",
+                    borderRadius: "9999px",
+                    fontSize: "0.8rem",
+                    fontWeight: 700,
+                    border: activeCategory === cat.slug ? "none" : "1.5px solid #e0eeee",
+                    backgroundColor: activeCategory === cat.slug ? "#006f6b" : "white",
+                    color: activeCategory === cat.slug ? "white" : "#062626",
+                    cursor: "pointer",
+                    fontFamily: "'Montserrat', sans-serif",
+                    transition: "all 0.2s",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
 
             {/* Divider */}
-            <div className="shrink-0 w-px h-6 bg-[#e0f0ef] mx-2" />
+            <div style={{ width: "1px", height: "24px", backgroundColor: "#e0eeee", flexShrink: 0, margin: "0 0.5rem" }} />
 
-            {/* Filter Toggle */}
+            {/* Filters Button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`shrink-0 flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold border transition-all duration-200 ${
-                showFilters
-                  ? "bg-[#062626] text-white border-[#062626]"
-                  : "bg-white text-[#062626] border-[#e0f0ef] hover:border-[#006f6b]"
-              }`}
+              style={{
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                padding: "0.5rem 1.25rem",
+                borderRadius: "9999px",
+                fontSize: "0.8rem",
+                fontWeight: 700,
+                border: "1.5px solid #e0eeee",
+                backgroundColor: showFilters ? "#062626" : "white",
+                color: showFilters ? "white" : "#062626",
+                cursor: "pointer",
+                fontFamily: "'Montserrat', sans-serif",
+                transition: "all 0.2s",
+                whiteSpace: "nowrap",
+              }}
             >
               <SlidersHorizontal size={14} />
               Filters
               {hasActiveFilters && (
-                <span className="w-2 h-2 rounded-full bg-[#006f6b]" />
+                <span style={{ width: "7px", height: "7px", borderRadius: "50%", backgroundColor: "#006f6b", display: "inline-block" }} />
               )}
             </button>
 
-            {/* Clear Filters */}
+            {/* Clear */}
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="shrink-0 flex items-center gap-1 px-4 py-2 rounded-full text-xs font-bold text-red-500 hover:bg-red-50 transition-colors"
+                style={{
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "9999px",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  border: "none",
+                  backgroundColor: "transparent",
+                  color: "#dc2626",
+                  cursor: "pointer",
+                  fontFamily: "'Montserrat', sans-serif",
+                  whiteSpace: "nowrap",
+                }}
               >
                 <X size={12} />
                 Clear all
@@ -213,70 +271,64 @@ export default function ExperiencesClient({
 
           {/* Expanded Filters */}
           {showFilters && (
-            <div className="pb-4 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-[#e0f0ef] pt-4">
+            <div style={{ borderTop: "1px solid #e0eeee", paddingTop: "1.25rem", paddingBottom: "1.25rem", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.25rem" }}>
 
-              {/* City Filter */}
+              {/* City */}
               <div>
-                <label className="text-xs font-bold text-[#062626] uppercase tracking-wider mb-2 block">
+                <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#062626", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "0.5rem" }}>
                   City
                 </label>
-                <div className="relative">
+                <div style={{ position: "relative" }}>
                   <select
                     value={activeCity}
                     onChange={(e) => updateParams({ city: e.target.value })}
-                    className="w-full appearance-none bg-[#f4fafa] border border-[#e0f0ef] rounded-xl px-4 py-3 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b] cursor-pointer"
+                    style={{ width: "100%", appearance: "none", backgroundColor: "#f4f7f7", border: "1.5px solid #e0eeee", borderRadius: "10px", padding: "0.75rem 1rem", fontSize: "0.85rem", fontWeight: 500, color: "#062626", outline: "none", cursor: "pointer", fontFamily: "'Montserrat', sans-serif" }}
                   >
                     <option value="">All Cities</option>
-                    {cities.map((city) => (
-                      <option key={city} value={city}>{city}</option>
-                    ))}
+                    {cities.map((city) => <option key={city} value={city}>{city}</option>)}
                   </select>
-                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <ChevronDown size={14} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", color: "#9ca3af", pointerEvents: "none" }} />
                 </div>
               </div>
 
-              {/* Price Range */}
+              {/* Price */}
               <div>
-                <label className="text-xs font-bold text-[#062626] uppercase tracking-wider mb-2 block">
+                <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#062626", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "0.5rem" }}>
                   Price Range
                 </label>
-                <div className="flex items-center gap-2">
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <input
                     type="number"
                     placeholder="Min $"
                     value={searchParams.min_price || ""}
                     onChange={(e) => updateParams({ min_price: e.target.value })}
-                    className="w-full bg-[#f4fafa] border border-[#e0f0ef] rounded-xl px-4 py-3 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b]"
+                    style={{ flex: 1, backgroundColor: "#f4f7f7", border: "1.5px solid #e0eeee", borderRadius: "10px", padding: "0.75rem 1rem", fontSize: "0.85rem", color: "#062626", outline: "none", fontFamily: "'Montserrat', sans-serif" }}
                   />
-                  <span className="text-[#062626]/40 font-bold">—</span>
+                  <span style={{ color: "rgba(6,38,38,0.3)", fontWeight: 700 }}>—</span>
                   <input
                     type="number"
                     placeholder="Max $"
                     value={searchParams.max_price || ""}
                     onChange={(e) => updateParams({ max_price: e.target.value })}
-                    className="w-full bg-[#f4fafa] border border-[#e0f0ef] rounded-xl px-4 py-3 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b]"
+                    style={{ flex: 1, backgroundColor: "#f4f7f7", border: "1.5px solid #e0eeee", borderRadius: "10px", padding: "0.75rem 1rem", fontSize: "0.85rem", color: "#062626", outline: "none", fontFamily: "'Montserrat', sans-serif" }}
                   />
                 </div>
               </div>
 
               {/* Sort */}
               <div>
-                <label className="text-xs font-bold text-[#062626] uppercase tracking-wider mb-2 block">
+                <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#062626", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "0.5rem" }}>
                   Sort By
                 </label>
-                <div className="relative">
+                <div style={{ position: "relative" }}>
                   <select
                     value={activeSort}
                     onChange={(e) => updateParams({ sort: e.target.value })}
-                    className="w-full appearance-none bg-[#f4fafa] border border-[#e0f0ef] rounded-xl px-4 py-3 text-sm font-medium text-[#062626] outline-none focus:border-[#006f6b] cursor-pointer"
+                    style={{ width: "100%", appearance: "none", backgroundColor: "#f4f7f7", border: "1.5px solid #e0eeee", borderRadius: "10px", padding: "0.75rem 1rem", fontSize: "0.85rem", fontWeight: 500, color: "#062626", outline: "none", cursor: "pointer", fontFamily: "'Montserrat', sans-serif" }}
                   >
-                    {SORT_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
+                    {SORT_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                   </select>
-                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <ChevronDown size={14} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", color: "#9ca3af", pointerEvents: "none" }} />
                 </div>
               </div>
             </div>
@@ -285,127 +337,161 @@ export default function ExperiencesClient({
       </div>
 
       {/* Results */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-10">
-        
-       {/* Results Count + Map Toggle */}
-        <div className="flex items-center justify-between mb-8">
-        <p className="text-[#062626]/60 text-sm font-medium">
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "2.5rem 80px" }}>
+
+        {/* Results Count + Map Toggle */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.75rem" }}>
+          <p style={{ color: "rgba(6,38,38,0.5)", fontSize: "0.85rem", fontWeight: 600 }}>
             {initialExperiences.length === 0
-            ? "No experiences found"
-            : `${initialExperiences.length} experience${initialExperiences.length !== 1 ? 's' : ''} found`
+              ? "No experiences found"
+              : `${initialExperiences.length} experience${initialExperiences.length !== 1 ? 's' : ''} found`
             }
-        </p>
-        <button
+          </p>
+          <button
             onClick={() => setShowMap(!showMap)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold border transition-all ${
-            showMap
-                ? "bg-[#062626] text-white border-[#062626]"
-                : "bg-white text-[#062626] border-[#e0f0ef] hover:border-[#006f6b]"
-            }`}
-        >
-            <MapPin size={14} />
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              padding: "0.6rem 1.5rem",
+              borderRadius: "9999px",
+              fontSize: "0.8rem",
+              fontWeight: 700,
+              border: "1.5px solid #e0eeee",
+              backgroundColor: showMap ? "#062626" : "white",
+              color: showMap ? "white" : "#062626",
+              cursor: "pointer",
+              fontFamily: "'Montserrat', sans-serif",
+              transition: "all 0.2s",
+            }}
+          >
+            <Map size={14} />
             {showMap ? "Hide Map" : "Show Map"}
-        </button>
+          </button>
         </div>
 
-                {/* Map View */}
-                {showMap && (
-                <div className="mb-8">
-                    <ExperienceMap
-                    experiences={initialExperiences}
-                    height="450px"
-                    zoom={2}
-                    center={{ lat: 20, lng: 10 }}
-                    />
-                </div>
-                )}
+        {/* Map */}
+        {showMap && (
+          <div style={{ marginBottom: "2rem" }}>
+            <ExperienceMap
+              experiences={initialExperiences}
+              height="450px"
+              zoom={2}
+              center={{ lat: 20, lng: 10 }}
+            />
+          </div>
+        )}
 
         {/* Empty State */}
         {initialExperiences.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-6xl mb-4">🌍</p>
-            <h3
-              className="text-2xl font-black text-[#062626] mb-3"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
-            >
+          <div style={{ textAlign: "center", padding: "5rem 0" }}>
+            <p style={{ fontSize: "4rem", marginBottom: "1rem" }}>🌍</p>
+            <h3 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#062626", marginBottom: "0.75rem", fontFamily: "'Montserrat', sans-serif" }}>
               No experiences found
             </h3>
-            <p className="text-[#062626]/50 font-medium mb-6">
+            <p style={{ color: "rgba(6,38,38,0.5)", fontWeight: 500, marginBottom: "1.5rem", fontSize: "0.9rem" }}>
               Try adjusting your filters or search terms
             </p>
             <button
               onClick={clearFilters}
-              className="bg-[#006f6b] hover:bg-[#00534d] text-white font-bold px-8 py-3 rounded-full transition-colors"
+              style={{ backgroundColor: "#006f6b", color: "white", fontWeight: 700, padding: "0.875rem 2rem", borderRadius: "9999px", border: "none", cursor: "pointer", fontFamily: "'Montserrat', sans-serif", fontSize: "0.875rem" }}
             >
               Clear Filters
             </button>
           </div>
         )}
 
-        {/* Experience Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {/* Cards Grid */}
+        <div className="experiences-grid" style={{ gap: "1.25rem" }}>
           {initialExperiences.map((exp) => (
             <Link
               key={exp.id}
               href={`/experiences/${exp.id}`}
-              className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-[#e0f0ef]"
+              style={{ textDecoration: "none", display: "block" }}
             >
-              {/* Image */}
-              <div className="relative overflow-hidden h-48">
-                <img
-                  src={
-                    exp.cover_image_url ||
-                    CATEGORY_IMAGES[exp.category] ||
-                    CATEGORY_IMAGES['default']
-                  }
-                  alt={exp.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-3 left-3 bg-[#062626]/80 backdrop-blur-sm text-[#89e3d5] text-xs font-bold px-3 py-1.5 rounded-full">
-                  {exp.category}
-                </div>
-                {exp.is_featured && (
-                  <div className="absolute top-3 right-3 bg-[#9d691d] text-white text-xs font-bold px-3 py-1.5 rounded-full">
-                    Featured
+              <div
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  border: "1.5px solid #e8eeee",
+                  transition: "all 0.25s ease",
+                  cursor: "pointer",
+                  height: "100%",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.1)";
+                  e.currentTarget.style.transform = "translateY(-3px)";
+                  e.currentTarget.style.borderColor = "#006f6b";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.borderColor = "#e8eeee";
+                }}
+              >
+                {/* Image */}
+                <div style={{ position: "relative", height: "200px", overflow: "hidden" }}>
+                  <img
+                    src={exp.cover_image_url || CATEGORY_IMAGES[exp.category] || CATEGORY_IMAGES['default']}
+                    alt={exp.title}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                  />
+                  <div style={{ position: "absolute", top: "10px", left: "10px", backgroundColor: "rgba(6,38,38,0.85)", backdropFilter: "blur(4px)", color: "#89e3d5", fontSize: "0.68rem", fontWeight: 700, padding: "4px 10px", borderRadius: "9999px", fontFamily: "'Montserrat', sans-serif" }}>
+                    {exp.category}
                   </div>
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="p-4">
-                <div className="flex items-center gap-1.5 text-[#006f6b] text-xs mb-2 font-medium">
-                  <MapPin size={11} />
-                  <span>{exp.city}, {exp.country}</span>
-                </div>
-
-                <h3 className="font-bold text-[#062626] text-sm leading-snug mb-3 group-hover:text-[#006f6b] transition-colors line-clamp-2">
-                  {exp.title}
-                </h3>
-
-                <div className="flex items-center gap-2 text-xs text-gray-400 mb-4 font-medium">
-                  <span className="flex items-center gap-1">
-                    <Clock size={11} />
-                    {formatDuration(exp.duration_minutes)}
-                  </span>
-                  <span>·</span>
-                  <span>Max {exp.max_guests}</span>
-                </div>
-
-                <div className="flex items-center justify-between pt-3 border-t border-[#e0f0ef]">
-                  <div className="flex items-center gap-1.5">
-                    <div className="bg-[#006f6b] text-white text-xs font-black px-2 py-0.5 rounded">
-                      {exp.average_rating.toFixed(1)}
+                  {exp.is_featured && (
+                    <div style={{ position: "absolute", top: "10px", right: "10px", backgroundColor: "#9d691d", color: "white", fontSize: "0.68rem", fontWeight: 700, padding: "4px 10px", borderRadius: "9999px", fontFamily: "'Montserrat', sans-serif" }}>
+                      Featured
                     </div>
-                    <Star size={11} fill="currentColor" className="text-[#9d691d]" />
-                    <span className="text-xs text-gray-400">
-                      ({exp.total_reviews})
+                  )}
+                </div>
+
+                {/* Content */}
+                <div style={{ padding: "1rem 1rem 0.875rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.6rem" }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: "3px", color: "#006f6b", fontSize: "0.7rem", fontWeight: 600 }}>
+                      <MapPin size={10} />
+                      {exp.city}, {exp.country}
+                    </span>
+                    <span style={{ display: "flex", alignItems: "center", gap: "3px", color: "#8a9e9e", fontSize: "0.7rem", fontWeight: 500 }}>
+                      <Clock size={10} />
+                      {formatDuration(exp.duration_minutes)}
                     </span>
                   </div>
-                  <div>
-                    <span className="text-xs text-gray-400">from </span>
-                    <span className="text-base font-black text-[#062626]">
-                      ${exp.price}
-                    </span>
+
+                  <h3 style={{
+                    fontSize: "0.9rem", fontWeight: 800, color: "#062626",
+                    lineHeight: 1.35, marginBottom: "0.875rem",
+                    fontFamily: "'Montserrat', sans-serif",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical" as const,
+                    overflow: "hidden",
+                  }}>
+                    {exp.title}
+                  </h3>
+
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.75rem", borderTop: "1px solid #e8eeee" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                      <span style={{ fontSize: "1.2rem", fontWeight: 900, color: "#062626", fontFamily: "'Montserrat', sans-serif", lineHeight: 1 }}>
+                        {exp.average_rating.toFixed(1)}
+                      </span>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="#9d691d">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                      </svg>
+                      <span style={{ fontSize: "0.7rem", color: "#8a9e9e", fontWeight: 500 }}>
+                        ({exp.total_reviews})
+                      </span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "3px" }}>
+                      <span style={{ fontSize: "0.72rem", color: "#8a9e9e", fontWeight: 500 }}>from</span>
+                      <span style={{ fontSize: "1.25rem", fontWeight: 900, color: "#062626", fontFamily: "'Montserrat', sans-serif", lineHeight: 1 }}>
+                        ${exp.price}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -414,5 +500,5 @@ export default function ExperiencesClient({
         </div>
       </div>
     </main>
-  )
+  );
 }
