@@ -101,8 +101,8 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://plungers-platform.vercel.app'}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://plungers-platform.vercel.app'}/experiences/${experienceId}`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://travelplungers.com'}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://travelplungers.com'}/experiences/${experienceId}`,
       metadata: {
         experienceId,
         bookingId: booking?.id || 'pending',

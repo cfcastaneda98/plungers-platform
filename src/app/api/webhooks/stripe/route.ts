@@ -36,10 +36,11 @@ export async function POST(request: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session
 
         const bookingId = session.metadata?.bookingId
+        const travelerId = session.metadata?.travelerId
         const experienceId = session.metadata?.experienceId
 
         if (bookingId && bookingId !== 'pending') {
-          // Update booking status to confirmed
+          // Update booking to confirmed
           await supabaseAdmin
             .from('bookings')
             .update({
@@ -48,28 +49,23 @@ export async function POST(request: NextRequest) {
             })
             .eq('id', bookingId)
 
-          // Create transaction record
-          await supabaseAdmin
-            .from('transactions')
-            .insert([{
-              booking_id: bookingId,
-              traveler_id: session.metadata?.travelerId || '00000000-0000-0000-0000-000000000001',
-              business_id: '00000000-0000-0000-0000-000000000002',
-              stripe_payment_intent_id: session.payment_intent as string,
-              amount: (session.amount_total || 0) / 100,
-              currency: session.currency?.toUpperCase() || 'USD',
-              platform_fee: ((session.amount_total || 0) / 100) * 0.1,
-              host_payout: ((session.amount_total || 0) / 100) * 0.9,
-              stripe_fee: 0,
-              status: 'succeeded',
-              payout_status: 'pending',
-            }])
-
-          // Update experience booking count
-          if (experienceId) {
-            await supabaseAdmin.rpc('increment_booking_count', {
-              experience_id: experienceId,
-            })
+          // Only create transaction if we have a real traveler
+          if (travelerId && travelerId !== 'guest') {
+            await supabaseAdmin
+              .from('transactions')
+              .insert([{
+                booking_id: bookingId,
+                traveler_id: travelerId,
+                business_id: '00000000-0000-0000-0000-000000000002',
+                stripe_payment_intent_id: session.payment_intent as string,
+                amount: (session.amount_total || 0) / 100,
+                currency: session.currency?.toUpperCase() || 'USD',
+                platform_fee: ((session.amount_total || 0) / 100) * 0.1,
+                host_payout: ((session.amount_total || 0) / 100) * 0.9,
+                stripe_fee: 0,
+                status: 'succeeded',
+                payout_status: 'pending',
+              }])
           }
         }
 

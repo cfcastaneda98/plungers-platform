@@ -9,6 +9,8 @@ import {
 import { Experience, Business } from "@/lib/types";
 import dynamic from "next/dynamic";
 import MediaGallery from "@/components/ui/MediaGallery";
+import ReviewsSection from "@/components/ui/ReviewsSection";
+import { supabase } from "@/lib/supabase";
 
 const ExperienceMap = dynamic(
   () => import("@/components/ui/ExperienceMap"),
@@ -82,12 +84,12 @@ export default function ExperienceDetailClient({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          experienceId: experience.id,
-          guests,
-          bookingDate: selectedDate,
-          bookingTime: '09:00',
-          travelerId: null,
-        }),
+        experienceId: experience.id,
+        guests,
+        bookingDate: selectedDate,
+        bookingTime: '09:00',
+        travelerId: (await supabase.auth.getSession()).data.session?.user?.id || null,
+      }),
       })
       const data = await response.json()
       if (data.url) {
@@ -351,6 +353,17 @@ export default function ExperienceDetailClient({
               )}
             </div>
           </div>
+
+          {/* Reviews */}
+          <div id="reviews">
+            <ReviewsSection
+              experienceId={experience.id}
+              averageRating={experience.average_rating}
+              totalReviews={experience.total_reviews}
+            />
+          </div>
+
+          {/* Location */}
 
           {/* Right Column — Booking Widget */}
           <div style={{ position: "sticky", top: "100px" }}>

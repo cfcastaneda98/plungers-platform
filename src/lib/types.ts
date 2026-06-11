@@ -146,3 +146,18 @@ export interface Transaction {
   created_at: string
   updated_at: string
 }
+
+export interface Review {
+  id: string
+  experience_id: string
+  booking_id: string
+  traveler_id: string
+  rating: number
+  title: string | null
+  body: string
+  created_at: string
+  updated_at: string
+  profiles?: {
+    full_name: string | null
+  }
+}

@@ -323,8 +323,24 @@ export default function DashboardClient() {
                           <span style={{ fontSize: "1.1rem", fontWeight: 900, color: "#062626", fontFamily: font }}>
                             ${booking.total_amount.toFixed(2)}
                           </span>
-                          <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#006f6b", fontSize: "0.8rem", fontWeight: 700 }}>
-                            View Details <ChevronRight size={14} />
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                            {booking.status === 'completed' && (
+                              <Link
+                                href={`/experiences/${booking.experiences?.id}#reviews`}
+                                onClick={(e) => e.stopPropagation()}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: "4px",
+                                  color: "#9d691d", fontSize: "0.78rem", fontWeight: 700,
+                                  textDecoration: "none", fontFamily: font,
+                                }}
+                              >
+                                <Star size={13} fill="#9d691d" color="#9d691d" />
+                                Write Review
+                              </Link>
+                            )}
+                            <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#006f6b", fontSize: "0.8rem", fontWeight: 700 }}>
+                              View Details <ChevronRight size={14} />
+                            </div>
                           </div>
                         </div>
                       </div>

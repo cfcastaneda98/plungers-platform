@@ -1,6 +1,8 @@
 import { stripe } from "@/lib/stripe";
 import BookingSuccessClient from "./BookingSuccessClient";
 
+export const dynamic = 'force-dynamic';
+
 async function getSessionDetails(sessionId: string) {
   try {
     if (!sessionId || !sessionId.startsWith('cs_')) return null
