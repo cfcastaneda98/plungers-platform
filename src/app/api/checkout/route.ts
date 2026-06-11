@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Fetch experience from Supabase
-    const { data: experience, error: expError } = await supabase
+    // Fetch experience
+    const { data: experience, error: expError } = await supabaseAdmin
       .from('experiences')
       .select('*, businesses(*)')
       .eq('id', experienceId)
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     // Only create booking record if we have a real authenticated user
     let booking = null
     if (travelerId) {
-      const { data: bookingData, error: bookingError } = await supabase
+      const { data: bookingData, error: bookingError } = await supabaseAdmin
         .from('bookings')
         .insert([{
           experience_id: experienceId,
