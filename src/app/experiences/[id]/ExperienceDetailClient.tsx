@@ -11,6 +11,7 @@ import dynamic from "next/dynamic";
 import MediaGallery from "@/components/ui/MediaGallery";
 import ReviewsSection from "@/components/ui/ReviewsSection";
 import { supabase } from "@/lib/supabase";
+import WriteReview from "@/components/ui/WriteReview";
 
 const ExperienceMap = dynamic(
   () => import("@/components/ui/ExperienceMap"),
@@ -356,6 +357,10 @@ export default function ExperienceDetailClient({
 
           {/* Reviews */}
           <div id="reviews">
+            <WriteReview
+              experienceId={experience.id}
+              experienceTitle={experience.title}
+            />
             <ReviewsSection
               experienceId={experience.id}
               averageRating={experience.average_rating}
