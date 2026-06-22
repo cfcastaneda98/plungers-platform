@@ -115,8 +115,8 @@ export default function Hero() {
             lineHeight: 1.15, marginBottom: "1.25rem",
             paddingRight: isMobile ? "100px" : "200px",
           }}>
-            Authentic experiences,{" "}
-            <span style={{ color: "#89e3d5" }}>wherever</span> you are
+            Travel deeper,{" "}
+            <span style={{ color: "#89e3d5" }}>Connect</span> locally.
           </h1>
 
           {/* Subheadline */}
@@ -127,8 +127,8 @@ export default function Hero() {
             maxWidth: "520px", fontWeight: 500,
             fontFamily: "'Montserrat', sans-serif",
           }}>
-            Connect with local hosts offering food tours, artisan workshops,
-            outdoor adventures, and more.
+            Experience local life through the people, traditions, and stories that
+            make each every place unique.
           </p>
 
           {/* Search Bar */}

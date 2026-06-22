@@ -38,16 +38,16 @@ export default function Navbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white shadow-sm" : "bg-transparent"
+        scrolled ? "bg-white shadow-sm" : menuOpen ? "bg-white shadow-sm md:bg-transparent md:shadow-none" : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16">
+      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16">
         <div className="flex items-center justify-between py-5">
 
           {/* Logo — left aligned, larger */}
           <Link href="/" className="flex items-center shrink-0">
             <img
-              src={scrolled
+              src={scrolled || menuOpen
                 ? "/images/plungers-logo-dark.svg"
                 : "/images/plungers-logo.svg"
               }
@@ -81,132 +81,189 @@ export default function Navbar() {
             {/* Divider */}
             <div className={`w-px h-5 ${scrolled ? "bg-[#062626]/20" : "bg-white/30"}`} />
             {/* Auth Actions */}
-            {user ? (
-              <div className="flex items-center gap-6">
-                <Link
-                  href="/dashboard"
-                  className={`flex items-center gap-2 text-sm font-medium transition-colors duration-300 hover:opacity-70 ${
-                    scrolled ? "text-[#062626]" : "text-white"
-                  }`}
-                >
-                  <User size={15} />
-                  My Account
-                </Link>
+                  {user ? (
+                    <div className="flex items-center gap-6">
+                      <Link
+                        href="/dashboard"
+                        className={`flex items-center gap-2 text-sm font-medium transition-colors duration-300 hover:opacity-70 ${
+                          scrolled ? "text-[#062626]" : "text-white"
+                        }`}
+                      >
+                        <User size={15} />
+                        My Account
+                      </Link>
+                      <button
+                        onClick={handleSignOut}
+                        className={`flex items-center gap-2 text-sm font-medium transition-colors duration-300 hover:opacity-70 ${
+                          scrolled ? "text-[#062626]" : "text-white"
+                        }`}
+                      >
+                        <LogOut size={15} />
+                        Sign Out
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-6">
+                      <Link
+                        href="/auth/login"
+                        className={`text-sm font-medium transition-colors duration-300 hover:opacity-70 ${
+                          scrolled ? "text-[#062626]" : "text-white"
+                        }`}
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/apply"
+                        onMouseEnter={() => setButtonHovered(true)}
+                        onMouseLeave={() => setButtonHovered(false)}
+                        style={{
+                          paddingLeft: "2.25rem",
+                          paddingRight: "2.25rem",
+                          paddingTop: "0.875rem",
+                          paddingBottom: "0.875rem",
+                          borderRadius: "9999px",
+                          fontSize: "0.875rem",
+                          fontWeight: "600",
+                          transition: "all 0.2s",
+                          backgroundColor: scrolled
+                            ? buttonHovered ? "#00534d" : "#006f6b"
+                            : buttonHovered ? "rgba(6, 38, 38, 0.9)" : "rgba(6, 38, 38, 0.7)",
+                          color: "white",
+                          backdropFilter: "blur(4px)",
+                          border: scrolled ? "none" : "1px solid rgba(255,255,255,0.1)",
+                          whiteSpace: "nowrap" as const,
+                        }}
+                      >
+                        List Your Experience
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile Button */}
                 <button
-                  onClick={handleSignOut}
-                  className={`flex items-center gap-2 text-sm font-medium transition-colors duration-300 hover:opacity-70 ${
-                    scrolled ? "text-[#062626]" : "text-white"
-                  }`}
+                  className="md:hidden p-2 mr-1"
+                  onClick={() => setMenuOpen(!menuOpen)}
                 >
-                  <LogOut size={15} />
-                  Sign Out
+                  {menuOpen ? (
+                    <X size={22} className={scrolled || menuOpen ? "text-[#062626]" : "text-white"} />
+                  ) : (
+                    <Menu size={22} className={scrolled ? "text-[#062626]" : "text-white"} />
+                  )}
                 </button>
               </div>
-            ) : (
-              <div className="flex items-center gap-6">
-                <Link
-                  href="/auth/login"
-                  className={`text-sm font-medium transition-colors duration-300 hover:opacity-70 ${
-                    scrolled ? "text-[#062626]" : "text-white"
-                  }`}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/apply"
-                  onMouseEnter={() => setButtonHovered(true)}
-                  onMouseLeave={() => setButtonHovered(false)}
-                  style={{
-                    paddingLeft: "2.25rem",
-                    paddingRight: "2.25rem",
-                    paddingTop: "0.875rem",
-                    paddingBottom: "0.875rem",
-                    borderRadius: "9999px",
-                    fontSize: "0.875rem",
-                    fontWeight: "600",
-                    transition: "all 0.2s",
-                    backgroundColor: scrolled
-                      ? buttonHovered ? "#00534d" : "#006f6b"
-                      : buttonHovered ? "rgba(6, 38, 38, 0.9)" : "rgba(6, 38, 38, 0.7)",
-                    color: "white",
-                    backdropFilter: "blur(4px)",
-                    border: scrolled ? "none" : "1px solid rgba(255,255,255,0.1)",
-                    whiteSpace: "nowrap" as const,
-                  }}
-                >
-                  List Your Experience
-                </Link>
-              </div>
-            )}
-          </div>
 
-          {/* Mobile Button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? (
-              <X size={22} className={scrolled ? "text-[#062626]" : "text-white"} />
-            ) : (
-              <Menu size={22} className={scrolled ? "text-[#062626]" : "text-white"} />
-            )}
-          </button>
-        </div>
+              {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="md:hidden bg-white flex flex-col" style={{ borderTop: "1px solid #f0f0f0" }}>
+          {[
+            { label: "Experiences", href: "/experiences" },
+            { label: "How It Works", href: "/#how-it-works" },
+            { label: "For Businesses", href: "/apply" },
+          ].map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: "block",
+                padding: "1.1rem 1.5rem",
+                color: "#062626",
+                fontWeight: 500,
+                fontSize: "1rem",
+                borderBottom: "1px solid #f0f0f0",
+                textDecoration: "none",
+                fontFamily: "'Montserrat', sans-serif",
+                backgroundColor: "white",
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
 
-        {/* Mobile Menu */}
-        {menuOpen && (
-          <div className="md:hidden bg-white border-t border-[#e0f0ef] py-6 px-6 flex flex-col gap-1">
-            {[
-              { label: "Experiences", href: "/experiences" },
-              { label: "How It Works", href: "/#how-it-works" },
-              { label: "For Businesses", href: "/apply" },
-            ].map((link) => (
+          {/* Divider */}
+          <div style={{ height: "8px", backgroundColor: "#f8f8f8", borderBottom: "1px solid #f0f0f0" }} />
+
+          {user ? (
+            <>
               <Link
-                key={link.href}
-                href={link.href}
-                className="text-[#062626] font-medium py-3 px-5 rounded-xl hover:bg-[#f4fafa] transition-colors"
+                href="/dashboard"
                 onClick={() => setMenuOpen(false)}
+                style={{
+                  display: "block",
+                  padding: "1.1rem 1.5rem",
+                  color: "#062626",
+                  fontWeight: 500,
+                  fontSize: "1rem",
+                  borderBottom: "1px solid #f0f0f0",
+                  textDecoration: "none",
+                  fontFamily: "'Montserrat', sans-serif",
+                }}
               >
-                {link.label}
+                My Account
               </Link>
-            ))}
-            <div className="h-px bg-[#e0f0ef] my-2 mx-4" />
-            {user ? (
-              <>
-                <Link
-                  href="/dashboard"
-                  className="text-[#062626] font-medium py-3 px-4 rounded-xl hover:bg-[#f4fafa] transition-colors"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  My Account
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  className="text-left text-[#062626] font-medium py-3 px-4 rounded-xl hover:bg-[#f4fafa] transition-colors"
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/auth/login"
-                  className="text-[#062626] font-medium py-3 px-4 rounded-xl hover:bg-[#f4fafa] transition-colors"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/apply"
-                  className="bg-[#006f6b] text-white text-center font-semibold px-6 py-3.5 rounded-full mt-2 hover:bg-[#00534d] transition-colors"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  List Your Experience
-                </Link>
-              </>
-            )}
+              <button
+                onClick={handleSignOut}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "1.1rem 1.5rem",
+                  color: "#062626",
+                  fontWeight: 500,
+                  fontSize: "1rem",
+                  borderBottom: "1px solid #f0f0f0",
+                  backgroundColor: "white",
+                  border: "none",
+                  fontFamily: "'Montserrat', sans-serif",
+                  cursor: "pointer",
+                } as React.CSSProperties}
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/auth/login"
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: "block",
+                padding: "1.1rem 1.5rem",
+                color: "#062626",
+                fontWeight: 500,
+                fontSize: "1rem",
+                borderBottom: "1px solid #f0f0f0",
+                textDecoration: "none",
+                fontFamily: "'Montserrat', sans-serif",
+              }}
+            >
+              Sign In
+            </Link>
+          )}
+
+          {/* CTA Button */}
+          <div style={{ padding: "1rem 1.5rem" }}>
+            <Link
+              href="/apply"
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: "block",
+                textAlign: "center",
+                backgroundColor: "#006f6b",
+                color: "white",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                padding: "1rem",
+                borderRadius: "9999px",
+                textDecoration: "none",
+                fontFamily: "'Montserrat', sans-serif",
+              }}
+            >
+              List Your Experience
+            </Link>
           </div>
-        )}
+        </div>
+      )}
       </div>
     </header>
   );

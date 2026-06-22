@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { Experience } from "@/lib/types";
 import ExperiencesClient from "./ExperiencesClient";
+import { CATEGORY_SLUGS } from "@/lib/constants";
 
 interface SearchParams {
   search?: string
@@ -24,20 +25,15 @@ async function getExperiences(params: SearchParams): Promise<Experience[]> {
       )
     }
 
+   
+
+    // In getExperiences function, replace the categoryMap block:
     if (params.category) {
-      const categoryMap: { [key: string]: string } = {
-        'food-drink': 'Food & Drink',
-        'outdoor': 'Outdoor Adventures',
-        'arts-crafts': 'Arts & Crafts',
-        'music': 'Music & Shows',
-        'photography': 'Photography',
-        'water-sports': 'Water Sports',
-        'nature': 'Nature & Wildlife',
-        'culture': 'City & Culture',
-      }
-      const categoryLabel = categoryMap[params.category]
+      const categoryLabel = CATEGORY_SLUGS[params.category]
       if (categoryLabel) {
-        query = query.eq('category', categoryLabel)
+        query = query.or(
+          `primary_category.eq.${categoryLabel},secondary_categories.cs.{${categoryLabel}}`
+        )
       }
     }
 

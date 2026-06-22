@@ -1,23 +1,31 @@
 "use client";
 
 import Link from "next/link";
+import { EXPERIENCE_CATEGORIES } from "@/lib/constants";
 import {
-  Utensils, Mountain, Palette, Music,
-  Camera, Waves, TreePine, Building2,
+  Landmark, BookOpen, Palette, Music,
+  UtensilsCrossed, Sprout, TreePine,
+  Users, Star, BookMarked, Heart,
+  HandHeart, Globe
 } from "lucide-react";
 
-const CATEGORIES = [
-  { label: "Food & Drink", icon: Utensils, slug: "food-drink", hoverColor: "#006f6b", hoverBg: "rgba(0,111,107,0.12)" },
-  { label: "Outdoor Adventures", icon: Mountain, slug: "outdoor", hoverColor: "#00534d", hoverBg: "rgba(0,83,77,0.12)" },
-  { label: "Arts & Crafts", icon: Palette, slug: "arts-crafts", hoverColor: "#9d691d", hoverBg: "rgba(157,105,29,0.12)" },
-  { label: "Music & Shows", icon: Music, slug: "music", hoverColor: "#006f6b", hoverBg: "rgba(0,111,107,0.12)" },
-  { label: "Photography", icon: Camera, slug: "photography", hoverColor: "#b86d00", hoverBg: "rgba(184,109,0,0.12)" },
-  { label: "Water Sports", icon: Waves, slug: "water-sports", hoverColor: "#00a0a3", hoverBg: "rgba(0,160,163,0.12)" },
-  { label: "Nature & Wildlife", icon: TreePine, slug: "nature", hoverColor: "#00534d", hoverBg: "rgba(0,83,77,0.12)" },
-  { label: "City & Culture", icon: Building2, slug: "culture", hoverColor: "#062626", hoverBg: "rgba(6,38,38,0.1)" },
-];
+const CATEGORY_CONFIG = [
+  { label: "Heritage & History", icon: Landmark, slug: "heritage-history", hoverColor: "#9d691d", hoverBg: "rgba(157,105,29,0.12)" },
+  { label: "Traditional Knowledge", icon: BookOpen, slug: "traditional-knowledge", hoverColor: "#006f6b", hoverBg: "rgba(0,111,107,0.12)" },
+  { label: "Art & Craftsmanship", icon: Palette, slug: "art-craftsmanship", hoverColor: "#9d691d", hoverBg: "rgba(157,105,29,0.12)" },
+  { label: "Music & Performance", icon: Music, slug: "music-performance", hoverColor: "#006f6b", hoverBg: "rgba(0,111,107,0.12)" },
+  { label: "Food Traditions", icon: UtensilsCrossed, slug: "food-traditions", hoverColor: "#b86d00", hoverBg: "rgba(184,109,0,0.12)" },
+  { label: "Agriculture & Farms", icon: Sprout, slug: "agriculture-farms", hoverColor: "#00534d", hoverBg: "rgba(0,83,77,0.12)" },
+  { label: "Nature & Local Knowledge", icon: TreePine, slug: "nature-local-knowledge", hoverColor: "#00534d", hoverBg: "rgba(0,83,77,0.12)" },
+  { label: "Community & Local Life", icon: Users, slug: "community-local-life", hoverColor: "#006f6b", hoverBg: "rgba(0,111,107,0.12)" },
+  { label: "Festivals & Celebrations", icon: Star, slug: "festivals-celebrations", hoverColor: "#9d691d", hoverBg: "rgba(157,105,29,0.12)" },
+  { label: "Storytelling & Oral Traditions", icon: BookMarked, slug: "storytelling-oral-traditions", hoverColor: "#062626", hoverBg: "rgba(6,38,38,0.1)" },
+  { label: "Spiritual & Cultural Practices", icon: Heart, slug: "spiritual-cultural-practices", hoverColor: "#006f6b", hoverBg: "rgba(0,111,107,0.12)" },
+  { label: "Volunteering & Impact", icon: HandHeart, slug: "volunteering-impact", hoverColor: "#00534d", hoverBg: "rgba(0,83,77,0.12)" },
+  { label: "Ways of Life", icon: Globe, slug: "ways-of-life", hoverColor: "#062626", hoverBg: "rgba(6,38,38,0.1)" },
+]
 
-function CategoryCard({ cat }: { cat: typeof CATEGORIES[0] }) {
+function CategoryCard({ cat }: { cat: typeof CATEGORY_CONFIG[0] }) {
   const Icon = cat.icon;
 
   return (
@@ -138,12 +146,12 @@ export default function Categories() {
             fontFamily: "'Montserrat', sans-serif",
             lineHeight: 1.2,
           }}>
-            What kind of experience are you after?
+            Ways to connect locally
           </h2>
         </div>
 
         <div className="categories-grid" style={{ gap: "1.25rem" }}>
-          {CATEGORIES.map((cat) => (
+          {CATEGORY_CONFIG.map((cat) => (
             <CategoryCard key={cat.slug} cat={cat} />
           ))}
         </div>

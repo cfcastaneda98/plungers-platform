@@ -124,12 +124,13 @@ export default function Footer() {
               color: "white",
               fontWeight: 700,
               fontSize: "0.875rem",
-              padding: "1rem 2.25rem",
+              padding: "1rem 2.30rem",
               borderRadius: "9999px",
               fontFamily: "'Montserrat', sans-serif",
               textDecoration: "none",
-              whiteSpace: "nowrap",
               transition: "background-color 0.2s",
+              overflow: "hidden",
+              display: "block",
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#00534d"}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#006f6b"}

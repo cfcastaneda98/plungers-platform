@@ -98,6 +98,8 @@ export interface Experience {
   total_reviews: number
   created_at: string
   updated_at: string
+  primary_category: string | null
+  secondary_categories: string[]
 }
 
 export interface Booking {

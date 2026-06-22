@@ -9,12 +9,7 @@ import {
   Loader2, ArrowRight, Lock, Zap, PiggyBank
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-
-const CATEGORIES = [
-  "Food & Drink", "Outdoor Adventures", "Arts & Crafts",
-  "Music & Shows", "Photography", "Water Sports",
-  "Nature & Wildlife", "City & Culture", "Other",
-];
+import { EXPERIENCE_CATEGORIES } from "@/lib/constants";
 
 const COUNTRIES = [
   "United States", "Mexico", "Colombia", "Spain",
@@ -386,7 +381,7 @@ export default function ApplyClient() {
                       onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"}
                     >
                       <option value="">Select a category</option>
-                      {CATEGORIES.map((cat) => (
+                      {EXPERIENCE_CATEGORIES.map((cat) => (
                         <option key={cat} value={cat}>{cat}</option>
                       ))}
                     </select>

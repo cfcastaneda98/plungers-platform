@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Experience } from "@/lib/types";
 import dynamic from "next/dynamic";
+import { EXPERIENCE_CATEGORIES, CATEGORY_SLUGS, SECTION_LABEL } from "@/lib/constants";
 
 const ExperienceMap = dynamic(
   () => import("@/components/ui/ExperienceMap"),
@@ -17,14 +18,7 @@ const ExperienceMap = dynamic(
 
 const CATEGORIES = [
   { label: "All", slug: "" },
-  { label: "Food & Drink", slug: "food-drink" },
-  { label: "Outdoor Adventures", slug: "outdoor" },
-  { label: "Arts & Crafts", slug: "arts-crafts" },
-  { label: "Music & Shows", slug: "music" },
-  { label: "Photography", slug: "photography" },
-  { label: "Water Sports", slug: "water-sports" },
-  { label: "Nature & Wildlife", slug: "nature" },
-  { label: "City & Culture", slug: "culture" },
+  ...Object.entries(CATEGORY_SLUGS).map(([slug, label]) => ({ label, slug }))
 ];
 
 const SORT_OPTIONS = [
@@ -120,8 +114,8 @@ export default function ExperiencesClient({
           Explore
         </p>
         <h1 style={{ fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 900, color: "white", fontFamily: "'Montserrat', sans-serif", marginBottom: "1.75rem" }}>
-          All Experiences
-        </h1>
+        {SECTION_LABEL}
+          </h1>
 
         {/* Search Bar */}
         <div style={{ display: "flex", alignItems: "center", backgroundColor: "white", borderRadius: "9999px", boxShadow: "0 4px 24px rgba(0,0,0,0.15)", overflow: "hidden", maxWidth: "680px" }}>
@@ -439,9 +433,11 @@ export default function ExperiencesClient({
                     onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
                     onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
                   />
-                  <div style={{ position: "absolute", top: "10px", left: "10px", backgroundColor: "rgba(6,38,38,0.85)", backdropFilter: "blur(4px)", color: "#89e3d5", fontSize: "0.68rem", fontWeight: 700, padding: "4px 10px", borderRadius: "9999px", fontFamily: "'Montserrat', sans-serif" }}>
-                    {exp.category}
+                  <div style={{ position: "absolute", top: "10px", left: "10px", display: "flex", flexDirection: "column", gap: "4px", maxWidth: "80%" }}>
+                  <div style={{ backgroundColor: "rgba(6,38,38,0.85)", backdropFilter: "blur(4px)", color: "#89e3d5", fontSize: "0.68rem", fontWeight: 700, padding: "4px 10px", borderRadius: "9999px", fontFamily: "'Montserrat', sans-serif", display: "inline-block" }}>
+                    {exp.primary_category || exp.category}
                   </div>
+                </div>
                   {exp.is_featured && (
                     <div style={{ position: "absolute", top: "10px", right: "10px", backgroundColor: "#9d691d", color: "white", fontSize: "0.68rem", fontWeight: 700, padding: "4px 10px", borderRadius: "9999px", fontFamily: "'Montserrat', sans-serif" }}>
                       Featured
