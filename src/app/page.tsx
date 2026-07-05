@@ -29,8 +29,8 @@ export default async function HomePage() {
   return (
     <main>
       <Hero />
-      <Categories />
       <FeaturedExperiences experiences={featuredExperiences} />
+      <Categories />
       <HowItWorks />
     </main>
   );

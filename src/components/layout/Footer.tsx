@@ -80,7 +80,7 @@ export default function Footer() {
           <div style={{
             position: "absolute",
             inset: 0,
-            backgroundImage: "url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&q=80')",
+            backgroundImage: "url('images/group-of-people-with-backpacks-looking-at-beautifu-2026-03-10-22-29-56-utc.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }} />
@@ -115,7 +115,7 @@ export default function Footer() {
 
           {/* Button */}
           <Link
-            href="/experiences"
+            href="/apply"
             style={{
               position: "relative",
               zIndex: 1,
@@ -135,7 +135,7 @@ export default function Footer() {
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#00534d"}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#006f6b"}
           >
-            Explore Experiences →
+            Become a Host →
           </Link>
         </div>
       </div>

@@ -75,7 +75,7 @@ export default function Hero() {
       {/* Background */}
       <div style={{
         position: "absolute", inset: 0,
-        backgroundImage: "url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1920&q=80')",
+        backgroundImage: "url('images/group-of-people-with-backpacks-looking-at-beautifu-2026-03-10-22-29-56-utc.jpg')",
         backgroundSize: "cover", backgroundPosition: "center",
       }} />
 
@@ -151,7 +151,7 @@ export default function Hero() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="What experience are you looking for?"
+              placeholder="Where would you like to experience local life?"
               style={{
                 flex: 1,
                 padding: isMobile ? "1rem 1rem" : "1.25rem 1rem",

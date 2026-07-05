@@ -64,7 +64,7 @@ export default function Navbar() {
               {[
                 { label: "Experiences", href: "/experiences" },
                 { label: "How It Works", href: "/#how-it-works" },
-                { label: "For Businesses", href: "/apply" },
+                { label: "Become a Host", href: "/apply" },
               ].map((link) => (
                 <Link
                   key={link.href}
@@ -159,7 +159,7 @@ export default function Navbar() {
           {[
             { label: "Experiences", href: "/experiences" },
             { label: "How It Works", href: "/#how-it-works" },
-            { label: "For Businesses", href: "/apply" },
+            { label: "Become a Host", href: "/apply" },
           ].map((link) => (
             <Link
               key={link.href}

@@ -489,6 +489,22 @@ export default function ExperiencesClient({
                       </span>
                     </div>
                   </div>
+                {/* Secondary Categories */}
+              {exp.secondary_categories && exp.secondary_categories.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "0.5rem" }}>
+                  {exp.secondary_categories.map((cat) => (
+                    <span key={cat} style={{
+                      fontSize: "0.62rem", fontWeight: 600,
+                      color: "#006f6b",
+                      backgroundColor: "rgba(0,111,107,0.08)",
+                      padding: "2px 8px", borderRadius: "9999px",
+                      fontFamily: "'Montserrat', sans-serif",
+                    }}>
+                      {cat}
+                    </span>
+                  ))}
+                </div>
+              )}
                 </div>
               </div>
             </Link>
