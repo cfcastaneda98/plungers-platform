@@ -2,13 +2,26 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import {
   User, MapPin, Calendar, Clock,
   Star, LogOut, ChevronRight,
-  Loader2, Package
+  Loader2, Package, Heart
 } from "lucide-react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { Experience } from "@/lib/types";
+import { useFavorites } from "@/lib/FavoritesContext";
+import FavoriteButton from "@/components/ui/FavoriteButton";
+
+const CATEGORY_IMAGES: { [key: string]: string } = {
+  'Food & Drink': 'https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?w=600&q=80',
+  'Outdoor Adventures': 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=600&q=80',
+  'Arts & Crafts': 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80',
+  'Music & Shows': 'https://images.unsplash.com/photo-1545959570-a94084071b5d?w=600&q=80',
+  'Water Sports': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80',
+  'default': 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
+}
 
 interface Booking {
   id: string
@@ -47,10 +60,16 @@ function formatDuration(minutes: number): string {
 }
 
 export default function DashboardClient() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { isFavorited } = useFavorites()
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [bookings, setBookings] = useState<Booking[]>([])
+  const [savedExperiences, setSavedExperiences] = useState<Experience[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<"bookings" | "profile">("bookings")
+  const [activeTab, setActiveTab] = useState<"bookings" | "saved" | "profile">(
+    searchParams.get("tab") === "saved" ? "saved" : "bookings"
+  )
 
   useEffect(() => {
     async function loadData() {
@@ -83,6 +102,24 @@ export default function DashboardClient() {
         }
       } catch (err) {
         console.error('Failed to load bookings:', err)
+      }
+
+      // Fetch saved (hearted) experiences
+      try {
+        const { data, error } = await supabase
+          .from('favorites')
+          .select('experience_id, created_at, experiences(*)')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false })
+
+        if (!error && data) {
+          const exps = (data as unknown as { experiences: Experience | null }[])
+            .map((row) => row.experiences)
+            .filter((exp): exp is Experience => exp !== null)
+          setSavedExperiences(exps)
+        }
+      } catch (err) {
+        console.error('Failed to load saved experiences:', err)
       } finally {
         setLoading(false)
       }
@@ -119,7 +156,7 @@ export default function DashboardClient() {
     }}>
 
       {/* Header */}
-      <div style={{ backgroundColor: "#062626", paddingTop: "6rem", paddingBottom: "2rem" }}>
+      <div style={{ backgroundColor: "#062626", paddingTop: "12rem", paddingBottom: "0rem" }}>
         <div className="section-pad" style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -167,11 +204,12 @@ export default function DashboardClient() {
           <div style={{ display: "flex", gap: "0.25rem", marginTop: "2rem" }}>
             {[
               { key: "bookings", label: "My Bookings" },
+              { key: "saved", label: "Saved" },
               { key: "profile", label: "Profile" },
             ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key as "bookings" | "profile")}
+                onClick={() => setActiveTab(tab.key as "bookings" | "saved" | "profile")}
                 style={{
                   padding: "0.625rem 1.5rem",
                   borderRadius: "9999px 9999px 0 0",
@@ -231,10 +269,18 @@ export default function DashboardClient() {
                   {bookings.length} booking{bookings.length !== 1 ? 's' : ''}
                 </p>
                 {bookings.map((booking) => (
-                  <Link
+                  <div
                     key={booking.id}
-                    href={booking.experiences ? `/experiences/${booking.experiences.id}` : '#'}
-                    style={{ textDecoration: "none", display: "block" }}
+                    role="link"
+                    tabIndex={0}
+                    onClick={() => router.push(booking.experiences ? `/experiences/${booking.experiences.id}` : '#')}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault()
+                        router.push(booking.experiences ? `/experiences/${booking.experiences.id}` : '#')
+                      }
+                    }}
+                    style={{ display: "block" }}
                   >
                     <div
                       style={{
@@ -345,10 +391,142 @@ export default function DashboardClient() {
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Saved Tab */}
+        {activeTab === "saved" && (
+          <div>
+            {(() => {
+              const visibleSaved = savedExperiences.filter((exp) => isFavorited(exp.id))
+              if (visibleSaved.length === 0) {
+                return (
+                  <div style={{
+                    backgroundColor: "white", borderRadius: "16px", border: "1.5px solid #e0eeee",
+                    padding: "4rem 2rem", textAlign: "center",
+                  }}>
+                    <Heart size={32} color="#c9d6d6" style={{ margin: "0 auto 1rem" }} />
+                    <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#062626", marginBottom: "0.5rem", fontFamily: font }}>
+                      Nothing saved yet
+                    </h2>
+                    <p style={{ color: "rgba(6,38,38,0.5)", fontSize: "0.9rem", marginBottom: "1.75rem" }}>
+                      Tap the heart on any experience to save it here for later.
+                    </p>
+                    <Link
+                      href="/experiences"
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: "0.5rem",
+                        backgroundColor: "#006f6b", color: "white", fontWeight: 700,
+                        fontSize: "0.875rem", padding: "0.875rem 2rem", borderRadius: "9999px",
+                        fontFamily: font, textDecoration: "none",
+                      }}
+                    >
+                      Browse Experiences
+                    </Link>
+                  </div>
+                )
+              }
+              return (
+                <>
+                  <p style={{ color: "rgba(6,38,38,0.5)", fontSize: "0.85rem", fontWeight: 600, marginBottom: "1.25rem" }}>
+                    {visibleSaved.length} saved experience{visibleSaved.length !== 1 ? 's' : ''}
+                  </p>
+                  <div className="experiences-grid" style={{ gap: "1.25rem" }}>
+                    {visibleSaved.map((exp) => (
+                      <div
+                        key={exp.id}
+                        role="link"
+                        tabIndex={0}
+                        onClick={() => router.push(`/experiences/${exp.id}`)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault()
+                            router.push(`/experiences/${exp.id}`)
+                          }
+                        }}
+                        style={{
+                          backgroundColor: "white", borderRadius: "16px", overflow: "hidden",
+                          border: "1.5px solid #e8eeee", transition: "all 0.25s ease",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.1)";
+                          e.currentTarget.style.transform = "translateY(-3px)";
+                          e.currentTarget.style.borderColor = "#006f6b";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.boxShadow = "none";
+                          e.currentTarget.style.transform = "translateY(0)";
+                          e.currentTarget.style.borderColor = "#e8eeee";
+                        }}
+                      >
+                        <div style={{ position: "relative", height: "180px", overflow: "hidden" }}>
+                          <img
+                            src={exp.cover_image_url || CATEGORY_IMAGES[exp.category] || CATEGORY_IMAGES['default']}
+                            alt={exp.title}
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                          />
+                          <div style={{ position: "absolute", top: "10px", left: "10px" }}>
+                            <div style={{ backgroundColor: "rgba(6,38,38,0.85)", backdropFilter: "blur(4px)", color: "#89e3d5", fontSize: "0.68rem", fontWeight: 700, padding: "4px 10px", borderRadius: "9999px", fontFamily: font, display: "inline-block" }}>
+                              {exp.primary_category || exp.category}
+                            </div>
+                          </div>
+                          <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+                            <FavoriteButton experienceId={exp.id} />
+                          </div>
+                        </div>
+
+                        <div style={{ padding: "1rem 1rem 0.875rem" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.6rem" }}>
+                            <span style={{ display: "flex", alignItems: "center", gap: "3px", color: "#006f6b", fontSize: "0.7rem", fontWeight: 600 }}>
+                              <MapPin size={10} />
+                              {exp.city}, {exp.country}
+                            </span>
+                            <span style={{ display: "flex", alignItems: "center", gap: "3px", color: "#8a9e9e", fontSize: "0.7rem", fontWeight: 500 }}>
+                              <Clock size={10} />
+                              {formatDuration(exp.duration_minutes)}
+                            </span>
+                          </div>
+
+                          <h3 style={{
+                            fontSize: "0.9rem", fontWeight: 800, color: "#062626",
+                            lineHeight: 1.35, marginBottom: "0.875rem", fontFamily: font,
+                            display: "-webkit-box", WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical" as const, overflow: "hidden",
+                          }}>
+                            {exp.title}
+                          </h3>
+
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.75rem", borderTop: "1px solid #e8eeee" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                              <span style={{ fontSize: "1.2rem", fontWeight: 900, color: "#062626", fontFamily: font, lineHeight: 1 }}>
+                                {exp.average_rating.toFixed(1)}
+                              </span>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="#9d691d">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                              </svg>
+                              <span style={{ fontSize: "0.7rem", color: "#8a9e9e", fontWeight: 500 }}>
+                                ({exp.total_reviews})
+                              </span>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "baseline", gap: "3px" }}>
+                              <span style={{ fontSize: "0.72rem", color: "#8a9e9e", fontWeight: 500 }}>from</span>
+                              <span style={{ fontSize: "1.25rem", fontWeight: 900, color: "#062626", fontFamily: font, lineHeight: 1 }}>
+                                ${exp.price}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )
+            })()}
           </div>
         )}
 

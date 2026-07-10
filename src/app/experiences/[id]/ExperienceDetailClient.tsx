@@ -116,6 +116,7 @@ export default function ExperienceDetailClient({
         images={experience.image_urls || []}
         videos={experience.video_urls || []}
         title={experience.title}
+        experienceId={experience.id}
       />
 
       {/* Main Content */}

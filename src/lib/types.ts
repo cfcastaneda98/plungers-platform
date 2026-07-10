@@ -163,3 +163,10 @@ export interface Review {
     full_name: string | null
   }
 }
+
+export interface Favorite {
+  id: string
+  user_id: string
+  experience_id: string
+  created_at: string
+}

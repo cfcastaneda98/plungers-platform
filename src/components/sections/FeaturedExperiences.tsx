@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { MapPin, Clock, Users } from "lucide-react";
 import { Experience } from "@/lib/types";
+import FavoriteButton from "@/components/ui/FavoriteButton";
 
 const CATEGORY_IMAGES: { [key: string]: string } = {
   'Food & Drink': 'https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?w=600&q=80',
@@ -82,6 +83,10 @@ function ExperienceCard({ exp }: { exp: Experience }) {
             letterSpacing: "0.02em",
           }}>
             {exp.category}
+          </div>
+          {/* Favorite button */}
+          <div style={{ position: "absolute", top: "12px", right: "12px" }}>
+            <FavoriteButton experienceId={exp.id} />
           </div>
         </div>
 

@@ -1,8 +1,10 @@
-import { createClient } from '@supabase/supabase-js'
+import { Suspense } from 'react'
 import DashboardClient from './DashboardClient'
-import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 
-export default async function DashboardPage() {
-  return <DashboardClient />
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={null}>
+      <DashboardClient />
+    </Suspense>
+  )
 }

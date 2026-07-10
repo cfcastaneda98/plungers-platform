@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Play, X, Maximize2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, X, Maximize2, Share2, Check } from "lucide-react";
+import FavoriteButton from "@/components/ui/FavoriteButton";
 
 interface MediaItem {
   type: "image" | "video";
@@ -14,6 +15,7 @@ interface MediaGalleryProps {
   images: string[];
   videos: string[];
   title: string;
+  experienceId: string;
 }
 
 function getYouTubeId(url: string): string | null {
@@ -42,6 +44,7 @@ export default function MediaGallery({
   images,
   videos,
   title,
+  experienceId,
 }: MediaGalleryProps) {
   // Build media items array — cover first, then videos, then images
   const mediaItems: MediaItem[] = [
@@ -62,6 +65,26 @@ export default function MediaGallery({
 
   const [activeIndex, setActiveIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
+
+  async function handleShare() {
+    const url = typeof window !== "undefined" ? window.location.href : ""
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({ title, url })
+      } catch {
+        // person canceled the share sheet — no-op
+      }
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(url)
+      setLinkCopied(true)
+      setTimeout(() => setLinkCopied(false), 2000)
+    } catch {
+      // clipboard blocked — nothing we can do silently, fail quietly
+    }
+  }
 
   const activeItem = mediaItems[activeIndex]
 
@@ -132,6 +155,19 @@ const goPrev = () => {
                   <Maximize2 size={14} />
                 </button>
               )}
+            </div>
+
+            {/* Share + Save */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleShare}
+                aria-label="Share this experience"
+                className="h-8 px-3 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-sm flex items-center gap-1.5 text-white text-xs font-bold transition-all"
+              >
+                {linkCopied ? <Check size={13} /> : <Share2 size={13} />}
+                {linkCopied ? "Link copied" : "Share"}
+              </button>
+              <FavoriteButton experienceId={experienceId} size="detail" />
             </div>
           </div>
 

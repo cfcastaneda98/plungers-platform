@@ -11,6 +11,7 @@ import { Experience } from "@/lib/types";
 import dynamic from "next/dynamic";
 import { EXPERIENCE_CATEGORIES, CATEGORY_SLUGS, SECTION_LABEL } from "@/lib/constants";
 import CategoryCarousel from "@/components/sections/CategoryCarousel";
+import FavoriteButton from "@/components/ui/FavoriteButton";
 
 const ExperienceMap = dynamic(
   () => import("@/components/ui/ExperienceMap"),
@@ -488,10 +489,13 @@ export default function ExperiencesClient({
                   </div>
                 </div>
                   {exp.is_featured && (
-                    <div style={{ position: "absolute", top: "10px", right: "10px", backgroundColor: "#9d691d", color: "white", fontSize: "0.68rem", fontWeight: 700, padding: "4px 10px", borderRadius: "9999px", fontFamily: "'Montserrat', sans-serif" }}>
+                    <div style={{ position: "absolute", top: "48px", right: "10px", backgroundColor: "#9d691d", color: "white", fontSize: "0.68rem", fontWeight: 700, padding: "4px 10px", borderRadius: "9999px", fontFamily: "'Montserrat', sans-serif" }}>
                       Featured
                     </div>
                   )}
+                  <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+                    <FavoriteButton experienceId={exp.id} />
+                  </div>
                 </div>
 
                 {/* Content */}

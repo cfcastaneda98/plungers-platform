@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MapProvider from "@/components/layout/MapProvider";
+import { FavoritesProvider } from "@/lib/FavoritesContext";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -28,9 +29,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geist.variable} antialiased`}>
         <MapProvider>
-          <Navbar />
-          {children}
-          <Footer />
+          <FavoritesProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </FavoritesProvider>
         </MapProvider>
       </body>
     </html>

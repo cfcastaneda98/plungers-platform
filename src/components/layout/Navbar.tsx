@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, Heart } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
@@ -87,6 +87,15 @@ export default function Navbar() {
             {/* Auth Actions */}
                   {user ? (
                     <div className="flex items-center gap-6">
+                      <Link
+                        href="/dashboard?tab=saved"
+                        className={`flex items-center gap-2 text-sm font-medium transition-colors duration-300 hover:opacity-70 ${
+                          scrolled ? "text-[#062626]" : "text-white"
+                        }`}
+                      >
+                        <Heart size={15} />
+                        Saved
+                      </Link>
                       <Link
                         href="/dashboard"
                         className={`flex items-center gap-2 text-sm font-medium transition-colors duration-300 hover:opacity-70 ${
@@ -193,6 +202,22 @@ export default function Navbar() {
 
           {user ? (
             <>
+              <Link
+                href="/dashboard?tab=saved"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  display: "block",
+                  padding: "1.1rem 1.5rem",
+                  color: "#062626",
+                  fontWeight: 500,
+                  fontSize: "1rem",
+                  borderBottom: "1px solid #f0f0f0",
+                  textDecoration: "none",
+                  fontFamily: "'Montserrat', sans-serif",
+                }}
+              >
+                Saved
+              </Link>
               <Link
                 href="/dashboard"
                 onClick={() => setMenuOpen(false)}
