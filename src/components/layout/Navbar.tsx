@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, User, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -77,6 +78,9 @@ export default function Navbar() {
                 </Link>
               ))}
             </nav>
+
+            {/* Language Switcher */}
+            <LanguageSwitcher scrolled={scrolled} />
 
             {/* Divider */}
             <div className={`w-px h-5 ${scrolled ? "bg-[#062626]/20" : "bg-white/30"}`} />
@@ -180,6 +184,9 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+
+          {/* Language Switcher */}
+          <LanguageSwitcher variant="mobile" />
 
           {/* Divider */}
           <div style={{ height: "8px", backgroundColor: "#f8f8f8", borderBottom: "1px solid #f0f0f0" }} />
