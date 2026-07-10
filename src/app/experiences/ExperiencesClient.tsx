@@ -5,21 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Search, SlidersHorizontal, MapPin,
-  Clock, Star, X, ChevronDown, Map
+  Clock, X, ChevronDown, Map,
 } from "lucide-react";
 import { Experience } from "@/lib/types";
 import dynamic from "next/dynamic";
 import { EXPERIENCE_CATEGORIES, CATEGORY_SLUGS, SECTION_LABEL } from "@/lib/constants";
+import CategoryCarousel from "@/components/sections/CategoryCarousel";
 
 const ExperienceMap = dynamic(
   () => import("@/components/ui/ExperienceMap"),
   { ssr: false }
 )
-
-const CATEGORIES = [
-  { label: "All", slug: "" },
-  ...Object.entries(CATEGORY_SLUGS).map(([slug, label]) => ({ label, slug }))
-];
 
 const SORT_OPTIONS = [
   { label: "Most Popular", value: "" },
@@ -55,6 +51,8 @@ interface Props {
     min_price?: string
     max_price?: string
     sort?: string
+    date?: string
+    time?: string
   }
 }
 
@@ -81,6 +79,8 @@ export default function ExperiencesClient({
       min_price: searchParams.min_price || "",
       max_price: searchParams.max_price || "",
       sort: searchParams.sort || "",
+      date: searchParams.date || "",
+      time: searchParams.time || "",
       ...updates,
     }
     Object.entries(current).forEach(([key, value]) => {
@@ -103,13 +103,30 @@ export default function ExperiencesClient({
   }
 
   const hasActiveFilters = activeCategory || activeCity ||
-    searchParams.min_price || searchParams.max_price || searchParams.search
+    searchParams.min_price || searchParams.max_price || searchParams.search ||
+    searchParams.date || searchParams.time
 
   return (
     <main style={{ minHeight: "100vh", backgroundColor: "#f4f7f7", fontFamily: "'Montserrat', sans-serif" }}>
 
       {/* Page Header */}
-      <div style={{ backgroundColor: "#062626", paddingTop: "6rem", paddingBottom: "2.5rem", paddingLeft: "80px", paddingRight: "80px" }}>
+      <div style={{
+        position: "relative", overflow: "hidden",
+        paddingTop: "12rem", paddingBottom: "2.5rem", paddingLeft: "80px", paddingRight: "80px",
+      }}>
+        {/* Background image */}
+        <div style={{
+          position: "absolute", inset: 0,
+          backgroundImage: "url('https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=1920&q=80')",
+          backgroundSize: "cover", backgroundPosition: "center",
+        }} />
+        {/* Overlay */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to right, rgba(6,38,38,0.92) 0%, rgba(6,38,38,0.8) 55%, rgba(0,111,107,0.55) 100%)",
+        }} />
+
+        <div style={{ position: "relative", zIndex: 1 }}>
         <p style={{ color: "#89e3d5", fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>
           Explore
         </p>
@@ -167,9 +184,20 @@ export default function ExperiencesClient({
             Search
           </button>
         </div>
+        </div>
       </div>
 
-      {/* Category Pills + Filters Bar */}
+      {/* Category Carousel */}
+      <div style={{ backgroundColor: "white", borderBottom: "1px solid #e0eeee" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
+          <CategoryCarousel
+            activeCategory={activeCategory}
+            onSelect={(slug) => updateParams({ category: slug })}
+          />
+        </div>
+      </div>
+
+      {/* Filters Bar */}
       <div style={{
         backgroundColor: "white",
         borderBottom: "1px solid #e0eeee",
@@ -179,30 +207,21 @@ export default function ExperiencesClient({
         <div style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingTop: "0.875rem", paddingBottom: "0.875rem", overflowX: "auto" }}>
 
-            {/* Category Pills */}
+            {/* Active category indicator (carousel above drives selection; this shows + clears it) */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flex: 1, overflowX: "auto" }}>
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.slug}
-                  onClick={() => updateParams({ category: cat.slug })}
-                  style={{
-                    flexShrink: 0,
-                    padding: "0.5rem 1.25rem",
-                    borderRadius: "9999px",
-                    fontSize: "0.8rem",
-                    fontWeight: 700,
-                    border: activeCategory === cat.slug ? "none" : "1.5px solid #e0eeee",
-                    backgroundColor: activeCategory === cat.slug ? "#006f6b" : "white",
-                    color: activeCategory === cat.slug ? "white" : "#062626",
-                    cursor: "pointer",
-                    fontFamily: "'Montserrat', sans-serif",
-                    transition: "all 0.2s",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {cat.label}
-                </button>
-              ))}
+              {activeCategory ? (
+                <span style={{
+                  flexShrink: 0, padding: "0.5rem 1.25rem", borderRadius: "9999px",
+                  fontSize: "0.8rem", fontWeight: 700, backgroundColor: "#006f6b", color: "white",
+                  fontFamily: "'Montserrat', sans-serif", whiteSpace: "nowrap",
+                }}>
+                  {CATEGORY_SLUGS[activeCategory] || activeCategory}
+                </span>
+              ) : (
+                <span style={{ fontSize: "0.8rem", color: "rgba(6,38,38,0.4)", fontWeight: 600 }}>
+                  All experiences
+                </span>
+              )}
             </div>
 
             {/* Divider */}
@@ -265,7 +284,7 @@ export default function ExperiencesClient({
 
           {/* Expanded Filters */}
           {showFilters && (
-            <div style={{ borderTop: "1px solid #e0eeee", paddingTop: "1.25rem", paddingBottom: "1.25rem", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.25rem" }}>
+            <div style={{ borderTop: "1px solid #e0eeee", paddingTop: "1.25rem", paddingBottom: "1.25rem", display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "1.25rem" }}>
 
               {/* City */}
               <div>
@@ -282,6 +301,36 @@ export default function ExperiencesClient({
                     {cities.map((city) => <option key={city} value={city}>{city}</option>)}
                   </select>
                   <ChevronDown size={14} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", color: "#9ca3af", pointerEvents: "none" }} />
+                </div>
+              </div>
+
+              {/* Date */}
+              <div>
+                <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#062626", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "0.5rem" }}>
+                  Date
+                </label>
+                <div style={{ position: "relative" }}>
+                  <input
+                    type="date"
+                    value={searchParams.date || ""}
+                    onChange={(e) => updateParams({ date: e.target.value })}
+                    style={{ width: "100%", backgroundColor: "#f4f7f7", border: "1.5px solid #e0eeee", borderRadius: "10px", padding: "0.75rem 1rem", fontSize: "0.85rem", fontWeight: 500, color: "#062626", outline: "none", cursor: "pointer", fontFamily: "'Montserrat', sans-serif" }}
+                  />
+                </div>
+              </div>
+
+              {/* Time */}
+              <div>
+                <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "#062626", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "0.5rem" }}>
+                  Time
+                </label>
+                <div style={{ position: "relative" }}>
+                  <input
+                    type="time"
+                    value={searchParams.time || ""}
+                    onChange={(e) => updateParams({ time: e.target.value })}
+                    style={{ width: "100%", backgroundColor: "#f4f7f7", border: "1.5px solid #e0eeee", borderRadius: "10px", padding: "0.75rem 1rem", fontSize: "0.85rem", fontWeight: 500, color: "#062626", outline: "none", cursor: "pointer", fontFamily: "'Montserrat', sans-serif" }}
+                  />
                 </div>
               </div>
 
@@ -489,22 +538,6 @@ export default function ExperiencesClient({
                       </span>
                     </div>
                   </div>
-                {/* Secondary Categories */}
-              {exp.secondary_categories && exp.secondary_categories.length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "0.5rem" }}>
-                  {exp.secondary_categories.map((cat) => (
-                    <span key={cat} style={{
-                      fontSize: "0.62rem", fontWeight: 600,
-                      color: "#006f6b",
-                      backgroundColor: "rgba(0,111,107,0.08)",
-                      padding: "2px 8px", borderRadius: "9999px",
-                      fontFamily: "'Montserrat', sans-serif",
-                    }}>
-                      {cat}
-                    </span>
-                  ))}
-                </div>
-              )}
                 </div>
               </div>
             </Link>
