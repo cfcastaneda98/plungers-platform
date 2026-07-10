@@ -139,11 +139,16 @@ const goPrev = () => {
             </>
           )}
 
-          {/* Top Controls */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+          {/* Bottom Controls — kept off the top edge on purpose: the fixed
+              navbar sits at z-50 over the top of this gallery, so anything
+              placed at top-4 is unreachable underneath it. */}
+          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
 
-            {/* Counter + Fullscreen */}
+            {/* Media type badge + Counter + Fullscreen */}
             <div className="flex items-center gap-2">
+              <span className="bg-[#062626]/80 backdrop-blur-sm text-[#89e3d5] text-xs font-bold px-4 py-2 rounded-full">
+                {activeItem.type === "video" ? "▶ Video" : "Photo"}
+              </span>
               <span className="bg-black/40 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full">
                 {activeIndex + 1} / {mediaItems.length}
               </span>
@@ -169,13 +174,6 @@ const goPrev = () => {
               </button>
               <FavoriteButton experienceId={experienceId} size="detail" />
             </div>
-          </div>
-
-          {/* Category Badge */}
-          <div className="absolute bottom-4 left-4">
-            <span className="bg-[#062626]/80 backdrop-blur-sm text-[#89e3d5] text-xs font-bold px-4 py-2 rounded-full">
-              {activeItem.type === "video" ? "▶ Video" : "Photo"}
-            </span>
           </div>
         </div>
 
