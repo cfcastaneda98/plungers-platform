@@ -5,10 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Mail, Lock, User, Loader2,
-  Eye, EyeOff, Check, ArrowLeft,
+  Eye, EyeOff, Check,
   Globe, Home
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import AuthLayout from "@/components/layout/AuthLayout";
 
 type AccountType = "traveler" | "business";
 
@@ -196,21 +197,13 @@ export default function RegisterClient() {
   }
 
   return (
-    <main style={{
-      minHeight: "100vh", backgroundColor: "#f4f7f7",
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center",
-      padding: "24px", fontFamily: font,
-    }}>
-
-      {/* Logo */}
-      <Link href="/" style={{ marginBottom: "2rem", display: "block" }}>
-        <img
-          src="/images/plungers-logo-dark.svg"
-          alt="Plungers"
-          style={{ height: "40px", width: "auto" }}
-        />
-      </Link>
+    <AuthLayout
+      eyebrow="Join Plungers"
+      headline="Travel deeper. Connect locally."
+      subtext="Create your account to book hands-on cultural experiences with verified local hosts around the world."
+      bullets={["Verified local hosts", "Secure, protected payments", "Free cancellation up to 48h before"]}
+      imageUrl="https://images.unsplash.com/photo-1493707553966-283afac8c358?w=1200&q=80"
+    >
 
       {/* Card */}
       <div style={{
@@ -503,23 +496,6 @@ export default function RegisterClient() {
           </Link>
         </p>
       </div>
-
-      {/* Back to Plungers */}
-      <Link
-        href="/"
-        style={{
-          display: "flex", alignItems: "center", gap: "0.5rem",
-          marginTop: "1.5rem", color: "rgba(6,38,38,0.4)",
-          fontSize: "0.8rem", fontWeight: 600,
-          textDecoration: "none", fontFamily: font, transition: "color 0.2s",
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.color = "#062626"}
-        onMouseLeave={(e) => e.currentTarget.style.color = "rgba(6,38,38,0.4)"}
-      >
-        <ArrowLeft size={14} />
-        Back to Plungers
-      </Link>
-
-    </main>
+    </AuthLayout>
   );
 }
