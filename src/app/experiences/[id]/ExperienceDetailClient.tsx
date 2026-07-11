@@ -4,7 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   MapPin, Clock, Users, Star,
-  Check, X, Globe, Calendar, Loader2
+  Check, X, Globe, Calendar, Loader2, ChevronDown,
+  Package, Coffee, Camera, Car, UserCheck,
+  MessageSquare, Gift, Ticket, Droplet, Shield
 } from "lucide-react";
 import { Experience, Business } from "@/lib/types";
 import dynamic from "next/dynamic";
@@ -12,6 +14,8 @@ import MediaGallery from "@/components/ui/MediaGallery";
 import ReviewsSection from "@/components/ui/ReviewsSection";
 import { supabase } from "@/lib/supabase";
 import WriteReview from "@/components/ui/WriteReview";
+import { CATEGORY_CAROUSEL_CONFIG } from "@/components/sections/CategoryCarousel";
+import { CATEGORY_SLUG_MAP } from "@/lib/constants";
 
 const ExperienceMap = dynamic(
   () => import("@/components/ui/ExperienceMap"),
@@ -34,6 +38,47 @@ function formatDuration(minutes: number): string {
   if (remaining === 0) return `${hours} hour${hours > 1 ? 's' : ''}`
   return `${hours}h ${remaining}min`
 }
+
+const TIME_SLOTS = [
+  "08:00", "09:00", "10:00", "11:00",
+  "12:00", "13:00", "14:00", "15:00",
+  "16:00", "17:00", "18:00",
+]
+
+function formatTimeLabel(time: string): string {
+  const [h, m] = time.split(":").map(Number)
+  const period = h >= 12 ? "PM" : "AM"
+  const hour12 = h % 12 === 0 ? 12 : h % 12
+  return `${hour12}:${m.toString().padStart(2, "0")} ${period}`
+}
+
+// Picks a sensible icon for a "What's included" line based on its wording,
+// since these are free-text entries in the database rather than a fixed enum.
+function getIncludeIcon(text: string) {
+  const t = text.toLowerCase()
+  if (/material|tool|equipment|gear|suppl/.test(t)) return Package
+  if (/food|drink|meal|snack|refreshment|beverage|coffee|tea/.test(t)) return Coffee
+  if (/photo|picture|camera/.test(t)) return Camera
+  if (/transport|ride|pickup|shuttle|transfer/.test(t)) return Car
+  if (/guide|host|instructor/.test(t)) return UserCheck
+  if (/insight|stor(y|ies)|tale|legend|history|culture/.test(t)) return MessageSquare
+  if (/gift|souvenir|keepsake|take home|piece to take/.test(t)) return Gift
+  if (/ticket|entry|admission|pass/.test(t)) return Ticket
+  if (/water|hydrat/.test(t)) return Droplet
+  if (/safety|insurance|protect/.test(t)) return Shield
+  return Check
+}
+
+// Safety net: every experience should show at least 4 "what's included" items,
+// but not every record has that curated yet. Until hosts can fill this in
+// through the dashboard, fall back to a generic set rather than showing an
+// empty or sparse section.
+const DEFAULT_INCLUDES = [
+  "Professional local guide",
+  "All necessary equipment",
+  "Cultural insights & stories",
+  "A memorable local connection",
+]
 
 interface BusinessData {
   business_name: string
@@ -58,6 +103,8 @@ export default function ExperienceDetailClient({
 }: Props) {
   const [guests, setGuests] = useState(1)
   const [selectedDate, setSelectedDate] = useState("")
+  const [selectedTime, setSelectedTime] = useState("")
+  const [descExpanded, setDescExpanded] = useState(false)
   const [bookingLoading, setBookingLoading] = useState(false)
   const [bookingError, setBookingError] = useState("")
   const totalPrice = experience.price * guests
@@ -73,9 +120,32 @@ export default function ExperienceDetailClient({
       : experience.businesses
     : null
 
+  // "Ways to connect locally" badges — primary category first, then up to
+  // two secondary ones, deduped, mapped to the shared icon/color config so
+  // they match the carousel styling used on the homepage and search page.
+  const categoryLabels = [
+    experience.primary_category,
+    ...(experience.secondary_categories || []),
+  ].filter((label, i, arr): label is string => !!label && arr.indexOf(label) === i).slice(0, 3)
+
+  const categoryBadges = categoryLabels.map((label) => {
+    const slug = CATEGORY_SLUG_MAP[label]
+    const config = CATEGORY_CAROUSEL_CONFIG.find((c) => c.slug === slug)
+    return { label, icon: config?.icon, bg: config?.bg || "#f4f7f7", color: config?.color || "#062626" }
+  })
+
+  const displayIncludes = ((experience.includes && experience.includes.length >= 4)
+    ? experience.includes
+    : DEFAULT_INCLUDES
+  ).slice(0, 10)
+
   async function handleBooking() {
     if (!selectedDate) {
       setBookingError("Please select a date first")
+      return
+    }
+    if (!selectedTime) {
+      setBookingError("Please select a time first")
       return
     }
     setBookingLoading(true)
@@ -88,7 +158,7 @@ export default function ExperienceDetailClient({
         experienceId: experience.id,
         guests,
         bookingDate: selectedDate,
-        bookingTime: '09:00',
+        bookingTime: selectedTime,
         travelerId: (await supabase.auth.getSession()).data.session?.user?.id || null,
       }),
       })
@@ -141,6 +211,7 @@ export default function ExperienceDetailClient({
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "1.25rem" }}>
                 {[
+                  { icon: <Star size={13} fill="#9d691d" color="#9d691d" />, text: `${experience.average_rating.toFixed(1)} (${experience.total_reviews} reviews)`, color: "#062626" },
                   { icon: <MapPin size={13} />, text: `${experience.city}, ${experience.country}`, color: "#006f6b" },
                   { icon: <Clock size={13} />, text: formatDuration(experience.duration_minutes), color: "#8a9e9e" },
                   { icon: <Users size={13} />, text: `Up to ${experience.max_guests} guests`, color: "#8a9e9e" },
@@ -154,57 +225,84 @@ export default function ExperienceDetailClient({
               </div>
             </div>
 
-            {/* Rating */}
-            <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", padding: "1.25rem 1.5rem", backgroundColor: "white", borderRadius: "14px", border: "1.5px solid #e0eeee", marginBottom: "1.75rem" }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: "2.5rem", fontWeight: 900, color: "#006f6b", fontFamily: font, lineHeight: 1 }}>
-                  {experience.average_rating.toFixed(1)}
-                </div>
-                <div style={{ fontSize: "0.65rem", color: "rgba(6,38,38,0.4)", fontWeight: 600, marginTop: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                  Rating
-                </div>
-              </div>
-              <div style={{ width: "1px", height: "40px", backgroundColor: "#e0eeee" }} />
-              <div>
-                <div style={{ display: "flex", gap: "3px", marginBottom: "5px" }}>
-                  {[1,2,3,4,5].map((s) => (
-                    <Star key={s} size={14} fill="#9d691d" color="#9d691d" />
-                  ))}
-                </div>
-                <p style={{ fontSize: "0.8rem", color: "rgba(6,38,38,0.5)", fontWeight: 500 }}>
-                  Based on {experience.total_reviews} reviews
-                </p>
-              </div>
-            </div>
-
             {/* Description */}
             <div style={{ marginBottom: "1.75rem" }}>
               <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#062626", marginBottom: "0.875rem", fontFamily: font }}>
                 About this experience
               </h2>
-              <p style={{ color: "rgba(6,38,38,0.65)", lineHeight: 1.75, fontWeight: 500, fontSize: "0.9rem" }}>
+              <p style={{
+                color: "rgba(6,38,38,0.65)", lineHeight: 1.75, fontWeight: 500, fontSize: "0.9rem",
+                display: descExpanded ? "block" : "-webkit-box",
+                WebkitLineClamp: descExpanded ? "unset" : 4,
+                WebkitBoxOrient: "vertical" as const,
+                overflow: descExpanded ? "visible" : "hidden",
+              }}>
                 {experience.description}
               </p>
+              {experience.description && experience.description.length > 260 && (
+                <button
+                  onClick={() => setDescExpanded(!descExpanded)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: "4px",
+                    background: "none", border: "none", cursor: "pointer",
+                    color: "#006f6b", fontWeight: 700, fontSize: "0.85rem",
+                    fontFamily: font, padding: 0, marginTop: "0.5rem",
+                  }}
+                >
+                  {descExpanded ? "Show less" : "Show more"}
+                  <ChevronDown size={14} style={{ transform: descExpanded ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+                </button>
+              )}
+
+              {/* Ways to connect locally */}
+              {categoryBadges.length > 0 && (
+                <div style={{ marginTop: "1.25rem" }}>
+                  <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "rgba(6,38,38,0.4)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "0.625rem" }}>
+                    Ways to connect locally
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                    {categoryBadges.map((badge) => {
+                      const Icon = badge.icon
+                      return (
+                        <span
+                          key={badge.label}
+                          style={{
+                            display: "flex", alignItems: "center", gap: "6px",
+                            backgroundColor: badge.bg, color: badge.color,
+                            fontSize: "0.78rem", fontWeight: 700,
+                            padding: "0.5rem 0.875rem", borderRadius: "9999px",
+                            fontFamily: font,
+                          }}
+                        >
+                          {Icon && <Icon size={13} />}
+                          {badge.label}
+                        </span>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Included */}
-            {experience.includes && experience.includes.length > 0 && (
-              <div style={{ marginBottom: "1.75rem" }}>
-                <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#062626", marginBottom: "0.875rem", fontFamily: font }}>
-                  What&apos;s included
-                </h2>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.625rem" }}>
-                  {experience.includes.map((item, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-                      <div style={{ width: "20px", height: "20px", borderRadius: "50%", backgroundColor: "rgba(0,111,107,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <Check size={11} color="#006f6b" />
+            <div style={{ marginBottom: "1.75rem" }}>
+              <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#062626", marginBottom: "1rem", fontFamily: font }}>
+                What&apos;s included
+              </h2>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem 2rem" }}>
+                {displayIncludes.map((item, i) => {
+                  const Icon = getIncludeIcon(item)
+                  return (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.75rem", minWidth: "160px" }}>
+                      <div style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "rgba(0,111,107,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <Icon size={16} color="#006f6b" />
                       </div>
-                      <span style={{ fontSize: "0.825rem", color: "rgba(6,38,38,0.65)", fontWeight: 500 }}>{item}</span>
+                      <span style={{ fontSize: "0.825rem", color: "rgba(6,38,38,0.7)", fontWeight: 600, lineHeight: 1.3 }}>{item}</span>
                     </div>
-                  ))}
-                </div>
+                  )
+                })}
               </div>
-            )}
+            </div>
 
             {/* Not Included */}
             {experience.excludes && experience.excludes.length > 0 && (
@@ -354,22 +452,20 @@ export default function ExperienceDetailClient({
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Reviews */}
-          <div id="reviews">
-            <WriteReview
-              experienceId={experience.id}
-              experienceTitle={experience.title}
-            />
-            <ReviewsSection
-              experienceId={experience.id}
-              averageRating={experience.average_rating}
-              totalReviews={experience.total_reviews}
-            />
+            {/* Reviews */}
+            <div id="reviews">
+              <WriteReview
+                experienceId={experience.id}
+                experienceTitle={experience.title}
+              />
+              <ReviewsSection
+                experienceId={experience.id}
+                averageRating={experience.average_rating}
+                totalReviews={experience.total_reviews}
+              />
+            </div>
           </div>
-
-          {/* Location */}
 
           {/* Right Column — Booking Widget */}
           <div style={{ position: "sticky", top: "100px" }}>
@@ -412,6 +508,27 @@ export default function ExperienceDetailClient({
                       min={new Date().toISOString().split('T')[0]}
                       style={{ width: "100%", paddingLeft: "2.25rem", paddingRight: "0.875rem", paddingTop: "0.75rem", paddingBottom: "0.75rem", backgroundColor: "#f4f7f7", border: "1.5px solid #e0eeee", borderRadius: "10px", fontSize: "0.85rem", color: "#062626", outline: "none", fontFamily: font, boxSizing: "border-box" as const }}
                     />
+                  </div>
+                </div>
+
+                {/* Time */}
+                <div>
+                  <label style={{ display: "block", fontSize: "0.65rem", fontWeight: 700, color: "#062626", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "0.5rem" }}>
+                    Select Time
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <Clock size={14} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#006f6b", pointerEvents: "none" }} />
+                    <select
+                      value={selectedTime}
+                      onChange={(e) => setSelectedTime(e.target.value)}
+                      style={{ width: "100%", appearance: "none", paddingLeft: "2.25rem", paddingRight: "2rem", paddingTop: "0.75rem", paddingBottom: "0.75rem", backgroundColor: "#f4f7f7", border: "1.5px solid #e0eeee", borderRadius: "10px", fontSize: "0.85rem", fontWeight: 500, color: "#062626", outline: "none", cursor: "pointer", fontFamily: font, boxSizing: "border-box" as const }}
+                    >
+                      <option value="">Choose a time</option>
+                      {TIME_SLOTS.map((time) => (
+                        <option key={time} value={time}>{formatTimeLabel(time)}</option>
+                      ))}
+                    </select>
+                    <ChevronDown size={14} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", color: "#9ca3af", pointerEvents: "none" }} />
                   </div>
                 </div>
 
@@ -468,17 +585,17 @@ export default function ExperienceDetailClient({
                 {/* Book Button */}
                 <button
                   onClick={handleBooking}
-                  disabled={bookingLoading || !selectedDate}
+                  disabled={bookingLoading || !selectedDate || !selectedTime}
                   style={{
                     width: "100%",
-                    backgroundColor: !selectedDate ? "#e0eeee" : "#006f6b",
-                    color: !selectedDate ? "rgba(6,38,38,0.4)" : "white",
+                    backgroundColor: (!selectedDate || !selectedTime) ? "#e0eeee" : "#006f6b",
+                    color: (!selectedDate || !selectedTime) ? "rgba(6,38,38,0.4)" : "white",
                     fontWeight: 700,
                     fontSize: "0.95rem",
                     padding: "1rem",
                     borderRadius: "12px",
                     border: "none",
-                    cursor: !selectedDate || bookingLoading ? "not-allowed" : "pointer",
+                    cursor: (!selectedDate || !selectedTime || bookingLoading) ? "not-allowed" : "pointer",
                     fontFamily: font,
                     display: "flex",
                     alignItems: "center",
@@ -486,13 +603,15 @@ export default function ExperienceDetailClient({
                     gap: "0.5rem",
                     transition: "background-color 0.2s",
                   }}
-                  onMouseEnter={(e) => { if (selectedDate && !bookingLoading) e.currentTarget.style.backgroundColor = "#00534d" }}
-                  onMouseLeave={(e) => { if (selectedDate && !bookingLoading) e.currentTarget.style.backgroundColor = "#006f6b" }}
+                  onMouseEnter={(e) => { if (selectedDate && selectedTime && !bookingLoading) e.currentTarget.style.backgroundColor = "#00534d" }}
+                  onMouseLeave={(e) => { if (selectedDate && selectedTime && !bookingLoading) e.currentTarget.style.backgroundColor = "#006f6b" }}
                 >
                   {bookingLoading ? (
                     <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> Processing...</>
                   ) : !selectedDate ? (
                     "Select a Date First"
+                  ) : !selectedTime ? (
+                    "Select a Time First"
                   ) : (
                     "Book Now →"
                   )}
