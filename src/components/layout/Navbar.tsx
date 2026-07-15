@@ -6,12 +6,15 @@ import { Menu, X, User, LogOut, Heart } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [buttonHovered, setButtonHovered] = useState(false);
+  const t = useTranslations("nav");
+  const locale = useLocale();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -39,10 +42,10 @@ export default function Navbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white shadow-sm" : menuOpen ? "bg-white shadow-sm md:bg-transparent md:shadow-none" : "bg-transparent"
+        scrolled ? "bg-white shadow-sm" : menuOpen ? "bg-white shadow-sm lg:bg-transparent lg:shadow-none" : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16">
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-12 xl:px-16">
         <div className="flex items-center justify-between py-5">
 
           {/* Logo — left aligned, larger */}
@@ -58,14 +61,14 @@ export default function Navbar() {
           </Link>
 
           {/* Right side — nav links + actions */}
-          <div className="hidden md:flex items-center gap-10">
+          <div className="hidden lg:flex items-center gap-8">
 
             {/* Nav Links */}
-            <nav className="flex items-center gap-10">
+            <nav className="flex items-center gap-8">
               {[
-                { label: "Experiences", href: "/experiences" },
-                { label: "How It Works", href: "/#how-it-works" },
-                { label: "Become a Host", href: "/apply" },
+                { label: t("experiences"), href: "/experiences" },
+                { label: t("howItWorks"), href: "/#how-it-works" },
+                { label: t("becomeHost"), href: "/apply" },
               ].map((link) => (
                 <Link
                   key={link.href}
@@ -80,7 +83,7 @@ export default function Navbar() {
             </nav>
 
             {/* Language Switcher */}
-            <LanguageSwitcher scrolled={scrolled} />
+            <LanguageSwitcher scrolled={scrolled} currentLocale={locale} />
 
             {/* Divider */}
             <div className={`w-px h-5 ${scrolled ? "bg-[#062626]/20" : "bg-white/30"}`} />
@@ -94,7 +97,7 @@ export default function Navbar() {
                         }`}
                       >
                         <Heart size={15} />
-                        Saved
+                        {t("saved")}
                       </Link>
                       <Link
                         href="/dashboard"
@@ -103,7 +106,7 @@ export default function Navbar() {
                         }`}
                       >
                         <User size={15} />
-                        My Account
+                        {t("myAccount")}
                       </Link>
                       <button
                         onClick={handleSignOut}
@@ -112,7 +115,7 @@ export default function Navbar() {
                         }`}
                       >
                         <LogOut size={15} />
-                        Sign Out
+                        {t("signOut")}
                       </button>
                     </div>
                   ) : (
@@ -123,7 +126,7 @@ export default function Navbar() {
                           scrolled ? "text-[#062626]" : "text-white"
                         }`}
                       >
-                        Sign In
+                        {t("signIn")}
                       </Link>
                       <Link
                         href="/apply"
@@ -147,7 +150,7 @@ export default function Navbar() {
                           whiteSpace: "nowrap" as const,
                         }}
                       >
-                        List Your Experience
+                        {t("listYourExperience")}
                       </Link>
                     </div>
                   )}
@@ -155,7 +158,7 @@ export default function Navbar() {
 
                 {/* Mobile Button */}
                 <button
-                  className="md:hidden p-2 mr-1"
+                  className="lg:hidden p-2 mr-1"
                   onClick={() => setMenuOpen(!menuOpen)}
                 >
                   {menuOpen ? (
@@ -168,11 +171,11 @@ export default function Navbar() {
 
               {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden bg-white flex flex-col" style={{ borderTop: "1px solid #f0f0f0" }}>
+        <div className="lg:hidden bg-white flex flex-col" style={{ borderTop: "1px solid #f0f0f0" }}>
           {[
-            { label: "Experiences", href: "/experiences" },
-            { label: "How It Works", href: "/#how-it-works" },
-            { label: "Become a Host", href: "/apply" },
+            { label: t("experiences"), href: "/experiences" },
+            { label: t("howItWorks"), href: "/#how-it-works" },
+            { label: t("becomeHost"), href: "/apply" },
           ].map((link) => (
             <Link
               key={link.href}
@@ -195,7 +198,7 @@ export default function Navbar() {
           ))}
 
           {/* Language Switcher */}
-          <LanguageSwitcher variant="mobile" />
+          <LanguageSwitcher variant="mobile" currentLocale={locale} />
 
           {/* Divider */}
           <div style={{ height: "8px", backgroundColor: "#f8f8f8", borderBottom: "1px solid #f0f0f0" }} />
@@ -216,7 +219,7 @@ export default function Navbar() {
                   fontFamily: "'Montserrat', sans-serif",
                 }}
               >
-                Saved
+                {t("saved")}
               </Link>
               <Link
                 href="/dashboard"
@@ -232,7 +235,7 @@ export default function Navbar() {
                   fontFamily: "'Montserrat', sans-serif",
                 }}
               >
-                My Account
+                {t("myAccount")}
               </Link>
               <button
                 onClick={handleSignOut}
@@ -251,7 +254,7 @@ export default function Navbar() {
                   cursor: "pointer",
                 } as React.CSSProperties}
               >
-                Sign Out
+                {t("signOut")}
               </button>
             </>
           ) : (
@@ -269,7 +272,7 @@ export default function Navbar() {
                 fontFamily: "'Montserrat', sans-serif",
               }}
             >
-              Sign In
+              {t("signIn")}
             </Link>
           )}
 
@@ -291,7 +294,7 @@ export default function Navbar() {
                 fontFamily: "'Montserrat', sans-serif",
               }}
             >
-              List Your Experience
+              {t("listYourExperience")}
             </Link>
           </div>
         </div>

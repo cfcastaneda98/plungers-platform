@@ -5,6 +5,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MapProvider from "@/components/layout/MapProvider";
 import { FavoritesProvider } from "@/lib/FavoritesContext";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -20,21 +22,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+
   return (
-    <html lang="en">
+    <html lang={locale === "es-mx" ? "es" : "en"}>
       <body className={`${geist.variable} antialiased`}>
-        <MapProvider>
-          <FavoritesProvider>
-            <Navbar />
-            {children}
-            <Footer />
-          </FavoritesProvider>
-        </MapProvider>
+        <NextIntlClientProvider>
+          <MapProvider>
+            <FavoritesProvider>
+              <Navbar />
+              {children}
+              <Footer />
+            </FavoritesProvider>
+          </MapProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

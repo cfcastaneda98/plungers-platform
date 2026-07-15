@@ -1,0 +1,19 @@
+{
+  "nav": {
+    "experiences": "Experiencias",
+    "howItWorks": "Cómo Funciona",
+    "becomeHost": "Conviértete en Anfitrión",
+    "saved": "Guardados",
+    "myAccount": "Mi Cuenta",
+    "signOut": "Cerrar Sesión",
+    "signIn": "Iniciar Sesión",
+    "listYourExperience": "Publica tu Experiencia"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "search": "Buscar",
+    "language": "Idioma"
+  }
+}

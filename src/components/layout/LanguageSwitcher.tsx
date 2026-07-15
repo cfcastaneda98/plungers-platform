@@ -1,40 +1,38 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Globe, ChevronDown, Check } from "lucide-react";
 
-// NOTE: This is a UI stub. It does not translate any page content yet —
-// that's a separate, larger i18n build (routing, translation files, per-page
-// content). Selecting a language here just persists the preference locally
-// so we have somewhere to hook in real translation later without redoing
-// this component. See conversation notes re: "Spanish (Mexican) fast-follow".
+// This now drives real translations via next-intl (see src/i18n/request.ts).
+// The locale lives in a cookie — not localStorage — because most of the site
+// renders as Server Components, which can only read cookies, not browser
+// storage. Selecting a language sets the cookie and refreshes the current
+// route so the server re-renders with the new locale.
 const LANGUAGES = [
   { code: "en", shortLabel: "EN", label: "English" },
-  { code: "es-mx", shortLabel: "ES", label: "Español (México)", comingSoon: true },
+  { code: "es-mx", shortLabel: "ES", label: "Español (México)" },
 ] as const;
 
-const STORAGE_KEY = "plungers_locale";
+const COOKIE_NAME = "locale";
+
+function setLocaleCookie(code: string) {
+  document.cookie = `${COOKIE_NAME}=${code}; path=/; max-age=${60 * 60 * 24 * 365}`;
+}
 
 interface LanguageSwitcherProps {
   /** Whether the parent nav is in its "scrolled" (white bg, dark text) state. Ignored for variant="mobile". */
   scrolled?: boolean
   variant?: "desktop" | "mobile"
+  currentLocale?: string
 }
 
-export default function LanguageSwitcher({ scrolled = true, variant = "desktop" }: LanguageSwitcherProps) {
+export default function LanguageSwitcher({ scrolled = true, variant = "desktop", currentLocale = "en" }: LanguageSwitcherProps) {
   const [open, setOpen] = useState(false);
-  const [locale, setLocale] = useState<string>("en");
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Reading localStorage after mount (rather than as a lazy useState initializer)
-    // is intentional here: it keeps server-rendered and first-client-render output
-    // identical ("en"), avoiding a hydration mismatch, then syncs the real
-    // preference in immediately after.
-    const saved = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (saved) setLocale(saved);
-  }, []);
+  const router = useRouter();
+  const t = useTranslations("common");
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -47,15 +45,13 @@ export default function LanguageSwitcher({ scrolled = true, variant = "desktop" 
   }, []);
 
   function selectLocale(code: string) {
-    setLocale(code);
     setOpen(false);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(STORAGE_KEY, code);
-    }
-    // Real locale switching (route/content) hooks in here once i18n is built.
+    if (code === currentLocale) return;
+    setLocaleCookie(code);
+    router.refresh();
   }
 
-  const current = LANGUAGES.find((l) => l.code === locale) ?? LANGUAGES[0];
+  const current = LANGUAGES.find((l) => l.code === currentLocale) ?? LANGUAGES[0];
 
   if (variant === "mobile") {
     return (
@@ -65,7 +61,7 @@ export default function LanguageSwitcher({ scrolled = true, variant = "desktop" 
           textTransform: "uppercase", letterSpacing: "0.1em",
           marginBottom: "0.75rem", fontFamily: "'Montserrat', sans-serif",
         }}>
-          Language
+          {t("language")}
         </p>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           {LANGUAGES.map((lang) => (
@@ -74,19 +70,13 @@ export default function LanguageSwitcher({ scrolled = true, variant = "desktop" 
               onClick={() => selectLocale(lang.code)}
               style={{
                 flex: 1, padding: "0.65rem 0.75rem", borderRadius: "10px",
-                border: locale === lang.code ? "1.5px solid #006f6b" : "1.5px solid #e0eeee",
-                backgroundColor: locale === lang.code ? "rgba(0,111,107,0.06)" : "white",
+                border: currentLocale === lang.code ? "1.5px solid #006f6b" : "1.5px solid #e0eeee",
+                backgroundColor: currentLocale === lang.code ? "rgba(0,111,107,0.06)" : "white",
                 color: "#062626", fontSize: "0.8rem", fontWeight: 600,
                 fontFamily: "'Montserrat', sans-serif", cursor: "pointer",
-                display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem",
               }}
             >
               {lang.label}
-              {"comingSoon" in lang && lang.comingSoon && (
-                <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#9d691d" }}>
-                  Coming soon
-                </span>
-              )}
             </button>
           ))}
         </div>
@@ -131,17 +121,10 @@ export default function LanguageSwitcher({ scrolled = true, variant = "desktop" 
                 cursor: "pointer", fontFamily: "'Montserrat', sans-serif", textAlign: "left",
               }}
             >
-              <span>
-                <span style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#062626" }}>
-                  {lang.label}
-                </span>
-                {"comingSoon" in lang && lang.comingSoon && (
-                  <span style={{ fontSize: "0.68rem", color: "#9d691d", fontWeight: 600 }}>
-                    Translation coming soon
-                  </span>
-                )}
+              <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#062626" }}>
+                {lang.label}
               </span>
-              {locale === lang.code && <Check size={15} color="#006f6b" />}
+              {currentLocale === lang.code && <Check size={15} color="#006f6b" />}
             </button>
           ))}
         </div>

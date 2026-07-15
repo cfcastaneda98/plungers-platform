@@ -1,0 +1,19 @@
+{
+  "nav": {
+    "experiences": "Experiences",
+    "howItWorks": "How It Works",
+    "becomeHost": "Become a Host",
+    "saved": "Saved",
+    "myAccount": "My Account",
+    "signOut": "Sign Out",
+    "signIn": "Sign In",
+    "listYourExperience": "List Your Experience"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "language": "Language"
+  }
+}
