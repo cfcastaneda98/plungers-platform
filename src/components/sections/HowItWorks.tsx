@@ -8,7 +8,7 @@ const STEPS = [
     icon: Search,
     step: "01",
     title: "Discover Experiences",
-    description: "Browse authentic local experiences by location, category, or theme. Find exactly what excites you.",
+    description: "Explore authentic local experiences by location, category, or theme. Find exactly what excites you.",
   },
   {
     icon: CalendarCheck,

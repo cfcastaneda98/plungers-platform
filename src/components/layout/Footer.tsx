@@ -101,7 +101,7 @@ export default function Footer() {
               marginBottom: "0.5rem",
               lineHeight: 1.2,
             }}>
-              Ready to plunge in?
+              Ready to share your culture?
             </h3>
             <p style={{
               color: "rgba(255,255,255,0.65)",

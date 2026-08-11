@@ -122,14 +122,6 @@ export default function Navbar() {
                     <div className="flex items-center gap-6">
                       <Link
                         href="/auth/login"
-                        className={`text-sm font-medium transition-colors duration-300 hover:opacity-70 ${
-                          scrolled ? "text-[#062626]" : "text-white"
-                        }`}
-                      >
-                        {t("signIn")}
-                      </Link>
-                      <Link
-                        href="/apply"
                         onMouseEnter={() => setButtonHovered(true)}
                         onMouseLeave={() => setButtonHovered(false)}
                         style={{
@@ -150,7 +142,7 @@ export default function Navbar() {
                           whiteSpace: "nowrap" as const,
                         }}
                       >
-                        {t("listYourExperience")}
+                        {t("signIn")}
                       </Link>
                     </div>
                   )}
@@ -258,46 +250,28 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <Link
-              href="/auth/login"
-              onClick={() => setMenuOpen(false)}
-              style={{
-                display: "block",
-                padding: "1.1rem 1.5rem",
-                color: "#062626",
-                fontWeight: 500,
-                fontSize: "1rem",
-                borderBottom: "1px solid #f0f0f0",
-                textDecoration: "none",
-                fontFamily: "'Montserrat', sans-serif",
-              }}
-            >
-              {t("signIn")}
-            </Link>
+            <div style={{ padding: "1rem 1.5rem" }}>
+              <Link
+                href="/auth/login"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  display: "block",
+                  textAlign: "center",
+                  backgroundColor: "#006f6b",
+                  color: "white",
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                  padding: "1rem",
+                  borderRadius: "9999px",
+                  textDecoration: "none",
+                  fontFamily: "'Montserrat', sans-serif",
+                }}
+              >
+                {t("signIn")}
+              </Link>
+            </div>
           )}
-
-          {/* CTA Button */}
-          <div style={{ padding: "1rem 1.5rem" }}>
-            <Link
-              href="/apply"
-              onClick={() => setMenuOpen(false)}
-              style={{
-                display: "block",
-                textAlign: "center",
-                backgroundColor: "#006f6b",
-                color: "white",
-                fontWeight: 700,
-                fontSize: "0.95rem",
-                padding: "1rem",
-                borderRadius: "9999px",
-                textDecoration: "none",
-                fontFamily: "'Montserrat', sans-serif",
-              }}
-            >
-              {t("listYourExperience")}
-            </Link>
           </div>
-        </div>
       )}
       </div>
     </header>

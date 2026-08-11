@@ -22,7 +22,7 @@ export default function Categories() {
             marginBottom: "0.75rem",
             fontFamily: "'Montserrat', sans-serif",
           }}>
-            Browse By Type
+            Explore By Type
           </p>
           <h2 style={{
             fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
