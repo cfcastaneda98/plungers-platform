@@ -115,7 +115,6 @@ export default function Hero() {
             lineHeight: 1.15, marginBottom: "1.25rem",
             paddingRight: isMobile ? "100px" : "200px",
           }}>
-            Travel deeper,{" "}
             <span style={{ color: "#89e3d5" }}>Connect</span> locally.
           </h1>
 

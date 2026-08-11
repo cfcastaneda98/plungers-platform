@@ -168,7 +168,6 @@ export default function Footer() {
               fontFamily: "'Montserrat', sans-serif",
               marginBottom: "1.75rem",
             }}>
-              &quot;Plunge Into A World Of Change&quot;
             </p>
 
             {/* Social Icons */}
