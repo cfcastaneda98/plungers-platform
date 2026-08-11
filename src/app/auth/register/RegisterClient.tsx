@@ -66,7 +66,7 @@ export default function RegisterClient() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [facebookLoading, setFacebookLoading] = useState(false);
-  const [appleLoading, setAppleLoading] = useState(false);
+  const [microsoftLoading, setMicrosoftLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
@@ -140,21 +140,22 @@ export default function RegisterClient() {
       }
     }
   
-    async function handleAppleRegister() {
-      setAppleLoading(true);
+    async function handleMicrosoftRegister() {
+      setMicrosoftLoading(true);
       setError("");
       try {
         const { error: authError } = await supabase.auth.signInWithOAuth({
-          provider: "apple",
+          provider: "azure",
           options: {
             redirectTo: `${window.location.origin}/auth/callback`,
+            scopes: "email",
           },
         });
-        if (authError) setError("Apple sign in failed. Please try again.");
+        if (authError) setError("Microsoft sign in failed. Please try again.");
       } catch {
         setError("Something went wrong. Please try again.");
       } finally {
-        setAppleLoading(false);
+        setMicrosoftLoading(false);
       }
     }
 
@@ -319,29 +320,32 @@ export default function RegisterClient() {
             Continue with Facebook
           </button>
 
-          {/* Apple */}
+          {/* Microsoft */}
           <button
-            onClick={handleAppleRegister}
-            disabled={appleLoading}
+            onClick={handleMicrosoftRegister}
+            disabled={microsoftLoading}
             style={{
               width: "100%", display: "flex", alignItems: "center",
               justifyContent: "center", gap: "0.75rem",
-              backgroundColor: "#000000", border: "1.5px solid #000000",
+              backgroundColor: "white", border: "1.5px solid #e0eeee",
               borderRadius: "12px", padding: "0.875rem 1.5rem",
-              fontSize: "0.9rem", fontWeight: 600, color: "white",
+              fontSize: "0.9rem", fontWeight: 600, color: "#062626",
               cursor: "pointer", fontFamily: "'Montserrat', sans-serif", transition: "all 0.2s",
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#1a1a1a"}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#000000"}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#006f6b"; e.currentTarget.style.backgroundColor = "#f4fafa"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e0eeee"; e.currentTarget.style.backgroundColor = "white"; }}
           >
-            {appleLoading ? (
+            {microsoftLoading ? (
               <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} />
             ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+              <svg width="18" height="18" viewBox="0 0 24 24">
+                <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+                <rect x="13" y="1" width="10" height="10" fill="#7FBA00"/>
+                <rect x="1" y="13" width="10" height="10" fill="#00A4EF"/>
+                <rect x="13" y="13" width="10" height="10" fill="#FFB900"/>
               </svg>
             )}
-            Continue with Apple
+            Continue with Microsoft
           </button>
         </div>
 
