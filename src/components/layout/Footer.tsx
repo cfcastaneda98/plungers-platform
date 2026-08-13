@@ -250,7 +250,7 @@ export default function Footer() {
           {["Privacy Policy", "Terms of Service"].map((label) => (
             <Link
               key={label}
-              href="/"
+              href={label === "Privacy Policy" ? "/privacy" : "/terms"}
               style={{
                 color: "rgba(255,255,255,0.35)",
                 fontSize: "0.75rem",
