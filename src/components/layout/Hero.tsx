@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
+import Reveal from "@/components/ui/Reveal";
 
 const TRUST_BADGES = [
   {
@@ -226,11 +227,10 @@ export default function Hero() {
       </div>
 
       {/* Trust Badges */}
-      <div className="hero-anim" style={{
+      <Reveal style={{
         position: "relative", zIndex: 10,
         backgroundColor: "rgba(0, 0, 0, 0)",
         borderTop: "1px solid rgba(255, 255, 255, 0)",
-        animationDelay: "480ms",
       }}>
         <div style={{
           maxWidth: "1280px", margin: "0 auto",
@@ -269,7 +269,7 @@ export default function Hero() {
             ))}
           </div>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }
