@@ -48,11 +48,21 @@ const TRUST_BADGES = [
 const PARALLAX_SPEED = 0.15;
 const PARALLAX_MAX_SHIFT = 40;
 
+// Text-layer parallax: much subtler than the background, and the heading moves
+// at a slightly different rate than the supporting text/search bar so the
+// hero reads as layered depth rather than one flat image with text on top.
+const TEXT_HEADING_SPEED = 0.08;
+const TEXT_SUPPORTING_SPEED = 0.12;
+const TEXT_PARALLAX_MAX_SHIFT = 32;
+
 export default function Hero() {
   const [search, setSearch] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
   const bgRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const subheadlineRef = useRef<HTMLParagraphElement>(null);
+  const searchBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -61,9 +71,10 @@ export default function Hero() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Subtle background parallax on scroll. Disabled on mobile and for
+  // Subtle background + text parallax on scroll. Disabled on mobile and for
   // prefers-reduced-motion. Reads/writes the DOM directly via rAF so scrolling
-  // never triggers a React re-render.
+  // never triggers a React re-render. One shared scroll listener drives all
+  // three layers so they stay in sync.
   useEffect(() => {
     if (isMobile) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -71,9 +82,22 @@ export default function Hero() {
     let ticking = false;
 
     const applyParallax = () => {
-      const shift = Math.min(window.scrollY * PARALLAX_SPEED, PARALLAX_MAX_SHIFT);
+      const scrollY = window.scrollY;
+      const bgShift = Math.min(scrollY * PARALLAX_SPEED, PARALLAX_MAX_SHIFT);
+      const headingShift = Math.min(scrollY * TEXT_HEADING_SPEED, TEXT_PARALLAX_MAX_SHIFT);
+      const supportingShift = Math.min(scrollY * TEXT_SUPPORTING_SPEED, TEXT_PARALLAX_MAX_SHIFT);
+
       if (bgRef.current) {
-        bgRef.current.style.transform = `translateY(${shift}px)`;
+        bgRef.current.style.transform = `translate3d(0, ${bgShift}px, 0)`;
+      }
+      if (headingRef.current) {
+        headingRef.current.style.transform = `translate3d(0, ${headingShift}px, 0)`;
+      }
+      if (subheadlineRef.current) {
+        subheadlineRef.current.style.transform = `translate3d(0, ${supportingShift}px, 0)`;
+      }
+      if (searchBarRef.current) {
+        searchBarRef.current.style.transform = `translate3d(0, ${supportingShift}px, 0)`;
       }
       ticking = false;
     };
@@ -87,6 +111,16 @@ export default function Hero() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isMobile]);
+
+  // The heading/subheadline/search bar play a one-time CSS entrance animation
+  // (`hero-anim`) that also animates `transform`. While that animation is
+  // running (and while its `both` fill-mode holds the end state) it takes
+  // priority over any transform we set from the scroll handler above, so the
+  // scroll parallax would silently never appear. Clearing `animation` once
+  // the entrance finishes hands `transform` fully over to the scroll loop.
+  const releaseEntranceAnimation = (e: React.AnimationEvent<HTMLElement>) => {
+    e.currentTarget.style.animation = "none";
+  };
 
   const handleSearch = () => {
     router.push(
@@ -111,6 +145,7 @@ export default function Hero() {
         height: `calc(100% + ${PARALLAX_MAX_SHIFT * 2}px)`,
         backgroundImage: "url('images/group-of-people-with-backpacks-looking-at-beautifu-2026-03-10-22-29-56-utc.jpg')",
         backgroundSize: "cover", backgroundPosition: "center",
+        transform: "translate3d(0, 0, 0)",
         willChange: "transform",
       }} />
 
@@ -144,41 +179,59 @@ export default function Hero() {
           </p>
 
           {/* Headline */}
-          <h1 className="hero-anim" style={{
-            fontFamily: "'Montserrat', sans-serif",
-            fontSize: isMobile ? "2.1rem" : "clamp(2.4rem, 4vw, 3.2rem)",
-            fontWeight: 900, color: "white",
-            lineHeight: 1.15, marginBottom: "1.25rem",
-            paddingRight: isMobile ? "100px" : "200px",
-            animationDelay: "120ms",
-          }}>
+          <h1
+            ref={headingRef}
+            className="hero-anim"
+            onAnimationEnd={releaseEntranceAnimation}
+            style={{
+              fontFamily: "'Montserrat', sans-serif",
+              fontSize: isMobile ? "2.1rem" : "clamp(2.4rem, 4vw, 3.2rem)",
+              fontWeight: 900, color: "white",
+              lineHeight: 1.15, marginBottom: "1.25rem",
+              paddingRight: isMobile ? "100px" : "200px",
+              animationDelay: "120ms",
+              willChange: "transform",
+            }}
+          >
             <span style={{ color: "#89e3d5" }}>Connect</span> locally.
           </h1>
 
           {/* Subheadline */}
-          <p className="hero-anim" style={{
-            color: "rgba(255,255,255,0.7)",
-            fontSize: isMobile ? "0.875rem" : "1rem",
-            lineHeight: 1.7, marginBottom: "2rem",
-            maxWidth: "520px", fontWeight: 500,
-            fontFamily: "'Montserrat', sans-serif",
-            animationDelay: "240ms",
-          }}>
+          <p
+            ref={subheadlineRef}
+            className="hero-anim"
+            onAnimationEnd={releaseEntranceAnimation}
+            style={{
+              color: "rgba(255,255,255,0.7)",
+              fontSize: isMobile ? "0.875rem" : "1rem",
+              lineHeight: 1.7, marginBottom: "2rem",
+              maxWidth: "520px", fontWeight: 500,
+              fontFamily: "'Montserrat', sans-serif",
+              animationDelay: "240ms",
+              willChange: "transform",
+            }}
+          >
             Experience local life through the people, traditions, and stories that
             make each every place unique.
           </p>
 
           {/* Search Bar */}
-          <div className="hero-anim" style={{
-            display: "flex", alignItems: "center",
-            backgroundColor: "white",
-            borderRadius: "9999px",
-            boxShadow: "0 4px 32px rgba(0,0,0,0.22)",
-            overflow: "hidden",
-            width: "100%",
-            maxWidth: isMobile ? "100%" : "680px",
-            animationDelay: "360ms",
-          }}>
+          <div
+            ref={searchBarRef}
+            className="hero-anim"
+            onAnimationEnd={releaseEntranceAnimation}
+            style={{
+              display: "flex", alignItems: "center",
+              backgroundColor: "white",
+              borderRadius: "9999px",
+              boxShadow: "0 4px 32px rgba(0,0,0,0.22)",
+              overflow: "hidden",
+              width: "100%",
+              maxWidth: isMobile ? "100%" : "680px",
+              animationDelay: "360ms",
+              willChange: "transform",
+            }}
+          >
             {!isMobile && (
               <div style={{ display: "flex", alignItems: "center", paddingLeft: "1.5rem", color: "#9ca3af", flexShrink: 0 }}>
                 <Search size={18} />
