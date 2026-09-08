@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Search, CalendarCheck, Smile } from "lucide-react";
+import Reveal from "@/components/ui/Reveal";
 
 const STEPS = [
   {
@@ -33,46 +34,48 @@ export default function HowItWorks() {
       <div className="section-pad" style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
 
         {/* Header */}
-        <div style={{ textAlign: "center", maxWidth: "680px", margin: "0 auto 3.5rem" }}>
-          <p style={{
-            color: "#006f6b",
-            fontWeight: 700,
-            fontSize: "0.7rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.2em",
-            marginBottom: "0.75rem",
-            fontFamily: "'Montserrat', sans-serif",
-          }}>
-            Simple Process
-          </p>
-          <h2 style={{
-            fontSize: "clamp(1.8rem, 3vw, 2.4rem)",
-            fontWeight: 900,
-            color: "#062626",
-            fontFamily: "'Montserrat', sans-serif",
-            lineHeight: 1.2,
-            marginBottom: "1rem",
-          }}>
-            How Plungers works
-          </h2>
-          <p style={{
-            color: "rgba(6,38,38,0.55)",
-            fontSize: "0.95rem",
-            lineHeight: 1.7,
-            fontWeight: 500,
-            fontFamily: "'Montserrat', sans-serif",
-          }}>
-            From discovery to experience — we make it effortless to connect with local hosts
-            and book something unforgettable
-          </p>
-        </div>
+        <Reveal>
+          <div style={{ textAlign: "center", maxWidth: "680px", margin: "0 auto 3.5rem" }}>
+            <p style={{
+              color: "#006f6b",
+              fontWeight: 700,
+              fontSize: "0.7rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.2em",
+              marginBottom: "0.75rem",
+              fontFamily: "'Montserrat', sans-serif",
+            }}>
+              Simple Process
+            </p>
+            <h2 style={{
+              fontSize: "clamp(1.8rem, 3vw, 2.4rem)",
+              fontWeight: 900,
+              color: "#062626",
+              fontFamily: "'Montserrat', sans-serif",
+              lineHeight: 1.2,
+              marginBottom: "1rem",
+            }}>
+              How Plungers works
+            </h2>
+            <p style={{
+              color: "rgba(6,38,38,0.55)",
+              fontSize: "0.95rem",
+              lineHeight: 1.7,
+              fontWeight: 500,
+              fontFamily: "'Montserrat', sans-serif",
+            }}>
+              From discovery to experience — we make it effortless to connect with local hosts
+              and book something unforgettable
+            </p>
+          </div>
+        </Reveal>
 
         <div className="steps-grid" style={{ gap: "1.5rem", marginBottom: "3rem" }}>
-          {STEPS.map((step) => {
+          {STEPS.map((step, index) => {
             const Icon = step.icon;
             return (
+              <Reveal key={step.step} delay={index * 120} style={{ height: "100%" }}>
               <div
-                key={step.step}
                 style={{
                   backgroundColor: "white",
                   border: "1.5px solid #e8eeee",
@@ -84,6 +87,7 @@ export default function HowItWorks() {
                   textAlign: "center",
                   position: "relative",
                   transition: "all 0.25s ease",
+                  height: "100%",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.08)";
@@ -164,6 +168,7 @@ export default function HowItWorks() {
                   {step.description}
                 </p>
               </div>
+              </Reveal>
             );
           })}
         </div>

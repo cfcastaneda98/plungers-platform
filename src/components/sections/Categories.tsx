@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CategoryCarousel from "@/components/sections/CategoryCarousel";
+import Reveal from "@/components/ui/Reveal";
 
 export default function Categories() {
   const router = useRouter();
@@ -12,32 +13,36 @@ export default function Categories() {
       <div className="section-pad" style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
 
         {/* Header */}
-        <div style={{ marginBottom: "3rem" }}>
-          <p style={{
-            color: "#006f6b",
-            fontWeight: 700,
-            fontSize: "0.7rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.2em",
-            marginBottom: "0.75rem",
-            fontFamily: "'Montserrat', sans-serif",
-          }}>
-            Explore By Type
-          </p>
-          <h2 style={{
-            fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
-            fontWeight: 900,
-            color: "#062626",
-            fontFamily: "'Montserrat', sans-serif",
-            lineHeight: 1.2,
-          }}>
-            Ways to connect locally
-          </h2>
-        </div>
+        <Reveal>
+          <div style={{ marginBottom: "3rem" }}>
+            <p style={{
+              color: "#006f6b",
+              fontWeight: 700,
+              fontSize: "0.7rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.2em",
+              marginBottom: "0.75rem",
+              fontFamily: "'Montserrat', sans-serif",
+            }}>
+              Explore By Type
+            </p>
+            <h2 style={{
+              fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
+              fontWeight: 900,
+              color: "#062626",
+              fontFamily: "'Montserrat', sans-serif",
+              lineHeight: 1.2,
+            }}>
+              Ways to connect locally
+            </h2>
+          </div>
+        </Reveal>
 
-        <CategoryCarousel
-          onSelect={(slug) => router.push(`/experiences?category=${slug}`)}
-        />
+        <Reveal delay={120}>
+          <CategoryCarousel
+            onSelect={(slug) => router.push(`/experiences?category=${slug}`)}
+          />
+        </Reveal>
 
         {/* View All CTA */}
         <div style={{ textAlign: "center", marginTop: "3rem" }}>

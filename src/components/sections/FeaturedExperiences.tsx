@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MapPin, Clock, Users } from "lucide-react";
 import { Experience } from "@/lib/types";
 import FavoriteButton from "@/components/ui/FavoriteButton";
+import Reveal from "@/components/ui/Reveal";
 
 const CATEGORY_IMAGES: { [key: string]: string } = {
   'Food & Drink': 'https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?w=600&q=80',
@@ -26,7 +27,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
   return (
     <Link
       href={`/experiences/${exp.id}`}
-      style={{ textDecoration: "none", display: "block" }}
+      style={{ textDecoration: "none", display: "block", height: "100%" }}
     >
       <div
         style={{
@@ -64,7 +65,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
               objectFit: "cover",
               transition: "transform 0.5s ease",
             }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.03)"}
             onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
           />
           {/* Category Badge */}
@@ -200,32 +201,36 @@ export default function FeaturedExperiences({ experiences }: FeaturedExperiences
       <div className="section-pad" style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
 
         {/* Header */}
-        <div style={{ marginBottom: "2.5rem" }}>
-          <p style={{
-            color: "#006f6b",
-            fontWeight: 700,
-            fontSize: "0.7rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.2em",
-            marginBottom: "0.75rem",
-            fontFamily: "'Montserrat', sans-serif",
-          }}>
-            Trending Now
-          </p>
-          <h2 style={{
-            fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
-            fontWeight: 900,
-            color: "#062626",
-            fontFamily: "'Montserrat', sans-serif",
-            lineHeight: 1.2,
-          }}>
-            Most popular experiences
-          </h2>
-        </div>
+        <Reveal>
+          <div style={{ marginBottom: "2.5rem" }}>
+            <p style={{
+              color: "#006f6b",
+              fontWeight: 700,
+              fontSize: "0.7rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.2em",
+              marginBottom: "0.75rem",
+              fontFamily: "'Montserrat', sans-serif",
+            }}>
+              Trending Now
+            </p>
+            <h2 style={{
+              fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
+              fontWeight: 900,
+              color: "#062626",
+              fontFamily: "'Montserrat', sans-serif",
+              lineHeight: 1.2,
+            }}>
+              Most popular experiences
+            </h2>
+          </div>
+        </Reveal>
 
         <div className="experiences-grid" style={{ gap: "1.25rem" }}>
-          {experiences.map((exp) => (
-            <ExperienceCard key={exp.id} exp={exp} />
+          {experiences.map((exp, index) => (
+            <Reveal key={exp.id} delay={Math.min(index * 80, 320)} style={{ height: "100%" }}>
+              <ExperienceCard exp={exp} />
+            </Reveal>
           ))}
         </div>
 

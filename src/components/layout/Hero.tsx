@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
@@ -43,10 +43,15 @@ const TRUST_BADGES = [
   },
 ];
 
+// Parallax tuning: background lags scroll by this fraction, capped at this many px.
+const PARALLAX_SPEED = 0.15;
+const PARALLAX_MAX_SHIFT = 40;
+
 export default function Hero() {
   const [search, setSearch] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
+  const bgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -54,6 +59,33 @@ export default function Hero() {
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  // Subtle background parallax on scroll. Disabled on mobile and for
+  // prefers-reduced-motion. Reads/writes the DOM directly via rAF so scrolling
+  // never triggers a React re-render.
+  useEffect(() => {
+    if (isMobile) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let ticking = false;
+
+    const applyParallax = () => {
+      const shift = Math.min(window.scrollY * PARALLAX_SPEED, PARALLAX_MAX_SHIFT);
+      if (bgRef.current) {
+        bgRef.current.style.transform = `translateY(${shift}px)`;
+      }
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(applyParallax);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobile]);
 
   const handleSearch = () => {
     router.push(
@@ -70,13 +102,15 @@ export default function Hero() {
   const sidePadding = isMobile ? "24px" : "80px";
 
   return (
-    <section style={{ position: "relative", minHeight: "92vh", display: "flex", flexDirection: "column" }}>
+    <section style={{ position: "relative", minHeight: "92vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
-      {/* Background */}
-      <div style={{
-        position: "absolute", inset: 0,
+      {/* Background — sized taller than the section so the parallax shift never reveals an edge */}
+      <div ref={bgRef} style={{
+        position: "absolute", top: `-${PARALLAX_MAX_SHIFT}px`, left: 0, right: 0,
+        height: `calc(100% + ${PARALLAX_MAX_SHIFT * 2}px)`,
         backgroundImage: "url('images/group-of-people-with-backpacks-looking-at-beautifu-2026-03-10-22-29-56-utc.jpg')",
         backgroundSize: "cover", backgroundPosition: "center",
+        willChange: "transform",
       }} />
 
       {/* Overlay */}
@@ -98,40 +132,43 @@ export default function Hero() {
         }}>
 
           {/* Eyebrow */}
-          <p style={{
+          <p className="hero-anim" style={{
             color: "#89e3d5", fontWeight: 700,
             fontSize: "0.7rem", textTransform: "uppercase",
             letterSpacing: "0.2em", marginBottom: "1.25rem",
             fontFamily: "'Montserrat', sans-serif",
+            animationDelay: "0ms",
           }}>
             Plunge Into A World Of Change
           </p>
 
           {/* Headline */}
-          <h1 style={{
+          <h1 className="hero-anim" style={{
             fontFamily: "'Montserrat', sans-serif",
             fontSize: isMobile ? "2.1rem" : "clamp(2.4rem, 4vw, 3.2rem)",
             fontWeight: 900, color: "white",
             lineHeight: 1.15, marginBottom: "1.25rem",
             paddingRight: isMobile ? "100px" : "200px",
+            animationDelay: "120ms",
           }}>
             <span style={{ color: "#89e3d5" }}>Connect</span> locally.
           </h1>
 
           {/* Subheadline */}
-          <p style={{
+          <p className="hero-anim" style={{
             color: "rgba(255,255,255,0.7)",
             fontSize: isMobile ? "0.875rem" : "1rem",
             lineHeight: 1.7, marginBottom: "2rem",
             maxWidth: "520px", fontWeight: 500,
             fontFamily: "'Montserrat', sans-serif",
+            animationDelay: "240ms",
           }}>
             Experience local life through the people, traditions, and stories that
             make each every place unique.
           </p>
 
           {/* Search Bar */}
-          <div style={{
+          <div className="hero-anim" style={{
             display: "flex", alignItems: "center",
             backgroundColor: "white",
             borderRadius: "9999px",
@@ -139,6 +176,7 @@ export default function Hero() {
             overflow: "hidden",
             width: "100%",
             maxWidth: isMobile ? "100%" : "680px",
+            animationDelay: "360ms",
           }}>
             {!isMobile && (
               <div style={{ display: "flex", alignItems: "center", paddingLeft: "1.5rem", color: "#9ca3af", flexShrink: 0 }}>
@@ -188,10 +226,11 @@ export default function Hero() {
       </div>
 
       {/* Trust Badges */}
-      <div style={{
+      <div className="hero-anim" style={{
         position: "relative", zIndex: 10,
         backgroundColor: "rgba(0, 0, 0, 0)",
         borderTop: "1px solid rgba(255, 255, 255, 0)",
+        animationDelay: "480ms",
       }}>
         <div style={{
           maxWidth: "1280px", margin: "0 auto",

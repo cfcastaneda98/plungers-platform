@@ -46,6 +46,23 @@ body {
   display: none;
 }
 
+/* Scroll-reveal utility (used by src/components/ui/Reveal.tsx).
+   Default state is fully visible so content never depends on JS to be seen. */
+.reveal-el {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-el {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
 @media (max-width: 1024px) {
   .categories-grid {
     grid-template-columns: repeat(3, 1fr);
