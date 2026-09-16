@@ -46,6 +46,46 @@ body {
   display: none;
 }
 
+.preloader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-teal);
+  transition: opacity 0.5s ease;
+}
+
+.preloader-overlay--out {
+  opacity: 0;
+}
+
+.preloader-icon {
+  clip-path: inset(0 0 100% 0); /* fully hidden until revealed */
+  -webkit-clip-path: inset(0 0 100% 0);
+}
+
+.preloader-icon--revealing {
+  animation: preloader-snake-reveal 1.3s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+
+@keyframes preloader-snake-reveal {
+  to {
+    clip-path: inset(0 0 0% 0);
+    -webkit-clip-path: inset(0 0 0% 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preloader-icon,
+  .preloader-icon--revealing {
+    animation: none;
+    clip-path: none;
+    -webkit-clip-path: none;
+  }
+}
+
 /* Scroll-reveal utility (used by src/components/ui/Reveal.tsx).
    Default state is fully visible so content never depends on JS to be seen. */
 .reveal-el {

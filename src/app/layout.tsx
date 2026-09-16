@@ -7,6 +7,7 @@ import MapProvider from "@/components/layout/MapProvider";
 import { FavoritesProvider } from "@/lib/FavoritesContext";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
+import Preloader from "@/components/ui/Preloader";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default async function RootLayout({
   return (
     <html lang={locale === "es-mx" ? "es" : "en"}>
       <body className={`${geist.variable} antialiased`}>
+        <Preloader />
         <NextIntlClientProvider>
           <MapProvider>
             <FavoritesProvider>
