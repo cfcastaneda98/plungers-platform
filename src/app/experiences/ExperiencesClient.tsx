@@ -65,7 +65,7 @@ export default function ExperiencesClient({
   const router = useRouter()
   const [search, setSearch] = useState(searchParams.search || "")
   const [showFilters, setShowFilters] = useState(false)
-  const [showMap, setShowMap] = useState(false)
+  const [showMap, setShowMap] = useState(true)
 
   const activeCategory = searchParams.category || ""
   const activeSort = searchParams.sort || ""
