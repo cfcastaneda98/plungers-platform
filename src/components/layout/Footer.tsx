@@ -5,10 +5,10 @@ import Link from "next/link";
 const FOOTER_LINKS = {
   Explore: [
     { label: "All Experiences", href: "/experiences" },
-    { label: "Food & Drink", href: "/experiences?category=food-drink" },
-    { label: "Outdoor Adventures", href: "/experiences?category=outdoor" },
-    { label: "Arts & Crafts", href: "/experiences?category=arts-crafts" },
-    { label: "Cultural Experiences", href: "/experiences?category=culture" },
+    { label: "Food Traditions", href: "/experiences?category=food-traditions" },
+    { label: "Nature & Local Knowledge", href: "/experiences?category=nature-local-knowledge" },
+    { label: "Music & Performance", href: "/experiences?category=music-performance" },
+    { label: "Art & Craftsmanship", href: "/experiences?category=art-craftsmanship" },
   ],
   "For Hosts": [
     { label: "List Your Experience", href: "/apply" },
@@ -149,7 +149,7 @@ export default function Footer() {
               <img
                 src="/images/plungers-logo.svg"
                 alt="Plungers"
-                style={{ height: "120px", width: "auto" }}
+                style={{ height: "140px", width: "auto" }}
               />
             </Link>
             <p style={{
