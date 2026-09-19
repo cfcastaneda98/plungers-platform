@@ -97,14 +97,23 @@ export default function CategoryCarousel({ activeCategory = "", onSelect }: Cate
                   fontFamily: "'Montserrat', sans-serif", padding: "0.25rem 0",
                 }}
               >
-                <div style={{
-                  width: "66px", height: "66px", borderRadius: "50%",
+                <div
+                className="category-carousel-circle"
+                style={{
+                  width: "60px",
+                  height: "60px",
+                  borderRadius: "50%",
                   backgroundColor: cat.bg,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  outline: isActive ? `2.5px solid ${cat.color}` : "2.5px solid transparent",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  outline: isActive
+                    ? `2.5px solid ${cat.color}`
+                    : "2.5px solid transparent",
                   outlineOffset: "3px",
-                  transition: "outline-color 0.2s",
-                }}>
+                  transition: "outline-color 0.2s, transform 0.22s ease, box-shadow 0.22s ease",
+                }}
+              >
                   <Icon size={34} strokeWidth={1.6} color={cat.color} />
                 </div>
                 <span style={{

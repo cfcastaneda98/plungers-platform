@@ -32,6 +32,28 @@ body {
   --border: #e0f0ef;
 }
 
+.category-carousel-circle {
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .category-carousel-circle:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(6, 38, 38, 0.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-carousel-circle {
+    transition: outline-color 0.2s !important;
+  }
+
+  .category-carousel-circle:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

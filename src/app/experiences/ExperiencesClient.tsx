@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import { EXPERIENCE_CATEGORIES, CATEGORY_SLUGS, SECTION_LABEL } from "@/lib/constants";
 import CategoryCarousel from "@/components/sections/CategoryCarousel";
 import FavoriteButton from "@/components/ui/FavoriteButton";
+import Reveal from "@/components/ui/Reveal";
 
 const ExperienceMap = dynamic(
   () => import("@/components/ui/ExperienceMap"),
@@ -42,6 +43,55 @@ function formatDuration(minutes: number): string {
   return `${hours}h ${remaining}min`
 }
 
+function useParallaxBackground() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const mediaQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+
+    if (mediaQuery.matches) return;
+
+    let ticking = false;
+
+    const update = () => {
+      const rect = el.parentElement?.getBoundingClientRect();
+      if (!rect) return;
+
+      const offset = Math.max(
+        -20,
+        Math.min(20, -rect.top * 0.08)
+      );
+
+      el.style.transform = `translate3d(0, ${offset}px, 0)`;
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    update();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  return ref;
+}
+
 interface Props {
   initialExperiences: Experience[]
   cities: string[]
@@ -63,6 +113,7 @@ export default function ExperiencesClient({
   searchParams,
 }: Props) {
   const router = useRouter()
+  const heroBackgroundRef = useParallaxBackground();
   const [search, setSearch] = useState(searchParams.search || "")
   const [showFilters, setShowFilters] = useState(false)
   const [showMap, setShowMap] = useState(true)
@@ -116,11 +167,17 @@ export default function ExperiencesClient({
         paddingTop: "12rem", paddingBottom: "2.5rem", paddingLeft: "80px", paddingRight: "80px",
       }}>
         {/* Background image */}
-        <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: "url('https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=1920&q=80')",
-          backgroundSize: "cover", backgroundPosition: "center",
-        }} />
+        <div
+          ref={heroBackgroundRef}
+          style={{
+            position: "absolute",
+            inset: "-20px 0",
+            backgroundImage: "url('https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=1920&q=80')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            willChange: "transform",
+          }}
+        />
         {/* Overlay */}
         <div style={{
           position: "absolute", inset: 0,
@@ -128,12 +185,30 @@ export default function ExperiencesClient({
         }} />
 
         <div style={{ position: "relative", zIndex: 1 }}>
-        <p style={{ color: "#89e3d5", fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>
+        <Reveal distance={18} delay={0}>
+        <p style={{
+          color: "#89e3d5",
+          fontWeight: 700,
+          fontSize: "0.7rem",
+          textTransform: "uppercase",
+          letterSpacing: "0.2em",
+          marginBottom: "0.75rem",
+        }}>
           Explore
         </p>
-        <h1 style={{ fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 900, color: "white", fontFamily: "'Montserrat', sans-serif", marginBottom: "1.75rem" }}>
-        {SECTION_LABEL}
-          </h1>
+      </Reveal>
+
+      <Reveal distance={16} delay={100}>
+        <h1 style={{
+          fontSize: "clamp(1.8rem, 3vw, 2.5rem)",
+          fontWeight: 900,
+          color: "white",
+          fontFamily: "'Montserrat', sans-serif",
+          marginBottom: "1.75rem",
+        }}>
+          {SECTION_LABEL}
+        </h1>
+      </Reveal>
 
         {/* Search Bar */}
         <div style={{ display: "flex", alignItems: "center", backgroundColor: "white", borderRadius: "9999px", boxShadow: "0 4px 24px rgba(0,0,0,0.15)", overflow: "hidden", maxWidth: "680px" }}>
@@ -190,7 +265,7 @@ export default function ExperiencesClient({
 
       {/* Category Carousel */}
       <div style={{ backgroundColor: "white", borderBottom: "1px solid #e0eeee" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", paddingLeft: "80px", paddingRight: "80px" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "40px", paddingLeft: "80px", paddingRight: "80px" }}>
           <CategoryCarousel
             activeCategory={activeCategory}
             onSelect={(slug) => updateParams({ category: slug })}
@@ -447,12 +522,20 @@ export default function ExperiencesClient({
 
         {/* Cards Grid */}
         <div className="experiences-grid" style={{ gap: "1.25rem" }}>
-          {initialExperiences.map((exp) => (
-            <Link
+          {initialExperiences.map((exp, index) => (
+            <Reveal
               key={exp.id}
-              href={`/experiences/${exp.id}`}
-              style={{ textDecoration: "none", display: "block" }}
+              distance={18}
+              delay={Math.min(index * 60, 240)}
             >
+              <Link
+                href={`/experiences/${exp.id}`}
+                style={{
+                  textDecoration: "none",
+                  display: "block",
+                  height: "100%",
+                }}
+              >
               <div
                 style={{
                   backgroundColor: "white",
@@ -545,6 +628,7 @@ export default function ExperiencesClient({
                 </div>
               </div>
             </Link>
+            </Reveal>
           ))}
         </div>
       </div>
