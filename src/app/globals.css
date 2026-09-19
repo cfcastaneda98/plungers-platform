@@ -164,6 +164,18 @@ body {
     padding-right: 0;
   }
 }
+.experience-media-thumb {
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .experience-media-thumb:hover {
+    transform: translateY(-2px);
+  }
+}
 .footer-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr 1fr 1fr;
@@ -281,5 +293,27 @@ body {
 @media (max-width: 768px) {
   .footer-cta-wrap {
     padding: 1rem 16px;
+  }
+}
+
+.media-gallery-image {
+  animation: mediaGalleryIn 0.45s ease-out;
+}
+
+@keyframes mediaGalleryIn {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media-gallery-image {
+    animation: none;
   }
 }

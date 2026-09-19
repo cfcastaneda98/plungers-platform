@@ -16,6 +16,7 @@ import { supabase } from "@/lib/supabase";
 import WriteReview from "@/components/ui/WriteReview";
 import { CATEGORY_CAROUSEL_CONFIG } from "@/components/sections/CategoryCarousel";
 import { CATEGORY_SLUG_MAP } from "@/lib/constants";
+import Reveal from "@/components/ui/Reveal";
 
 const ExperienceMap = dynamic(
   () => import("@/components/ui/ExperienceMap"),
@@ -226,6 +227,7 @@ export default function ExperienceDetailClient({
             </div>
 
             {/* Description */}
+            <Reveal distance={12}>
             <div style={{ marginBottom: "1.75rem" }}>
               <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#062626", marginBottom: "0.875rem", fontFamily: font }}>
                 About this experience
@@ -283,8 +285,10 @@ export default function ExperienceDetailClient({
                 </div>
               )}
             </div>
+            </Reveal>
 
             {/* Included */}
+            <Reveal distance={12} delay={50}>
             <div style={{ marginBottom: "1.75rem" }}>
               <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#062626", marginBottom: "1rem", fontFamily: font }}>
                 What&apos;s included
@@ -303,8 +307,9 @@ export default function ExperienceDetailClient({
                 })}
               </div>
             </div>
-
+            </Reveal>
             {/* Not Included */}
+            <Reveal distance={12} delay={50}>
             {experience.excludes && experience.excludes.length > 0 && (
               <div style={{ marginBottom: "1.75rem" }}>
                 <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#062626", marginBottom: "0.875rem", fontFamily: font }}>
@@ -322,8 +327,9 @@ export default function ExperienceDetailClient({
                 </div>
               </div>
             )}
-
+            </Reveal>
             {/* Requirements */}
+            <Reveal distance={12} delay={50}>
             {experience.requirements && experience.requirements.length > 0 && (
               <div style={{ marginBottom: "1.75rem" }}>
                 <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#062626", marginBottom: "0.875rem", fontFamily: font }}>
@@ -339,8 +345,9 @@ export default function ExperienceDetailClient({
                 </ul>
               </div>
             )}
-
+            </Reveal>
             {/* Host Info & Social */}
+            <Reveal distance={12}>
             {business && (
               <div style={{ marginBottom: "1.75rem", padding: "1.5rem", backgroundColor: "white", borderRadius: "16px", border: "1.5px solid #e0eeee" }}>
                 <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#062626", marginBottom: "1.25rem", fontFamily: font }}>
@@ -426,8 +433,9 @@ export default function ExperienceDetailClient({
                 )}
               </div>
             )}
-
+            </Reveal>
             {/* Location */}
+            <Reveal distance={12}>
             <div style={{ marginBottom: "1.75rem" }}>
               <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#062626", marginBottom: "0.875rem", fontFamily: font }}>
                 Location
@@ -452,8 +460,9 @@ export default function ExperienceDetailClient({
                 </div>
               )}
             </div>
-
+            </Reveal>
             {/* Reviews */}
+            <Reveal distance={12}>
             <div id="reviews">
               <WriteReview
                 experienceId={experience.id}
@@ -465,6 +474,7 @@ export default function ExperienceDetailClient({
                 totalReviews={experience.total_reviews}
               />
             </div>
+            </Reveal>
           </div>
 
           {/* Right Column — Booking Widget */}
@@ -636,6 +646,7 @@ export default function ExperienceDetailClient({
         </div>
 
         {/* Similar Experiences */}
+        <Reveal distance={12}>
         {similarExperiences.length > 0 && (
           <div style={{ marginTop: "4rem", paddingTop: "2.5rem", borderTop: "1px solid #e0eeee" }}>
             <h2 style={{ fontSize: "1.4rem", fontWeight: 900, color: "#062626", marginBottom: "2rem", fontFamily: font }}>
@@ -684,6 +695,7 @@ export default function ExperienceDetailClient({
             </div>
           </div>
         )}
+        </Reveal>
       </div>
     </main>
   )

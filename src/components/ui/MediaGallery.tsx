@@ -112,9 +112,10 @@ const goPrev = () => {
           ) : (
             <>
               <img
+                key={activeIndex}
                 src={activeItem.url}
                 alt={`${title} - ${activeIndex + 1}`}
-                className="w-full h-full object-cover transition-opacity duration-300"
+                className="media-gallery-image w-full h-full object-cover"
               />
               {/* Gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
