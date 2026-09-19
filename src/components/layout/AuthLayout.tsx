@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { Check } from "lucide-react";
+import Reveal from "@/components/ui/Reveal";
 
 const font = "'Montserrat', sans-serif";
 
@@ -15,16 +16,57 @@ interface AuthLayoutProps {
 }
 
 export default function AuthLayout({ eyebrow, headline, subtext, bullets, imageUrl, children }: AuthLayoutProps) {
+  const imageRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = imageRef.current;
+    if (!el) return;
+
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mediaQuery.matches) return;
+
+    let ticking = false;
+
+    const updateParallax = () => {
+      const rect = el.parentElement?.getBoundingClientRect();
+      if (!rect) return;
+
+      const offset = Math.max(-18, Math.min(18, -rect.top * 0.06));
+
+      el.style.transform = `translate3d(0, ${offset}px, 0)`;
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    updateParallax();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   return (
     <main className="auth-layout" style={{ fontFamily: font }}>
 
       {/* Image pane — same dark-teal gradient treatment as the Experiences search header */}
       <div className="auth-layout-image" style={{ position: "relative", overflow: "hidden" }}>
-        <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: `url('${imageUrl}')`,
-          backgroundSize: "cover", backgroundPosition: "center",
-        }} />
+        <div
+          ref={imageRef}
+          style={{
+            position: "absolute",
+            inset: "-18px 0",
+            backgroundImage: `url('${imageUrl}')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            willChange: "transform",
+          }}
+        />
         <div style={{
           position: "absolute", inset: 0,
           background: "linear-gradient(to top, rgba(6,38,38,0.95) 0%, rgba(6,38,38,0.75) 45%, rgba(0,111,107,0.45) 100%)",
@@ -35,7 +77,7 @@ export default function AuthLayout({ eyebrow, headline, subtext, bullets, imageU
           display: "flex", flexDirection: "column", justifyContent: "space-between",
           padding: "6rem",
         }}>
-
+          <Reveal distance={14} delay={0}>
           <div>
             <p style={{ color: "#89e3d5", fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "0.875rem" }}>
               {eyebrow}
@@ -62,8 +104,8 @@ export default function AuthLayout({ eyebrow, headline, subtext, bullets, imageU
                 </div>
               ))}
             </div>
-          </div>
-
+          </div>    
+          </Reveal>    
           {/* Spacer to balance the flex column */}
           <div />
         </div>
@@ -71,11 +113,16 @@ export default function AuthLayout({ eyebrow, headline, subtext, bullets, imageU
 
       {/* Form pane */}
       <div style={{
-        display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center",
-        padding: "24px", backgroundColor: "#f4f7f7",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px",
+        backgroundColor: "#f4f7f7",
       }}>
-        {children}
+        <Reveal distance={12} delay={0}>
+          {children}
+        </Reveal>
       </div>
     </main>
   );
