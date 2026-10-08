@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, ChevronRight } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 
 const TRUST_BADGES = [
   {
     icon: (
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
         <polyline points="20 6 9 17 4 12"/>
       </svg>
     ),
@@ -16,7 +16,7 @@ const TRUST_BADGES = [
   },
   {
     icon: (
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
         <circle cx="9" cy="7" r="4"/>
         <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
@@ -27,7 +27,7 @@ const TRUST_BADGES = [
   },
   {
     icon: (
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
       </svg>
     ),
@@ -35,7 +35,7 @@ const TRUST_BADGES = [
   },
   {
     icon: (
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
       </svg>
@@ -54,6 +54,16 @@ const PARALLAX_MAX_SHIFT = 40;
 const TEXT_HEADING_SPEED = 0.08;
 const TEXT_SUPPORTING_SPEED = 0.12;
 const TEXT_PARALLAX_MAX_SHIFT = 32;
+
+// Hero overlay: even (not left-weighted) so centered text reads on any photo.
+// Tweak these two numbers when the final hero image is in.
+const OVERLAY =
+  "linear-gradient(to bottom, rgba(6,38,38,0.55) 0%, rgba(6,38,38,0.35) 45%, rgba(6,38,38,0.7) 100%)";
+
+// The logo SVG has a lot of empty canvas around the artwork (art box inside a
+// 792x612 viewBox). These numbers crop the wrapper to just the artwork so the
+// logo can be sized and spaced like a normal element.
+const LOGO_ART = { x: 157.85, y: 195.58, w: 476.31, h: 220.78, vbW: 792 };
 
 export default function Hero() {
   const [search, setSearch] = useState("");
@@ -150,12 +160,9 @@ export default function Hero() {
       }} />
 
       {/* Overlay */}
-      <div style={{
-        position: "absolute", inset: 0,
-        background: "linear-gradient(to right, rgba(6,38,38,0.88) 0%, rgba(6,38,38,0.65) 50%, rgba(0,111,107,0.3) 100%)",
-      }} />
+      <div style={{ position: "absolute", inset: 0, background: OVERLAY }} />
 
-      {/* Content */}
+      {/* Content — everything centered */}
       <div style={{ position: "relative", zIndex: 10, flex: 1, display: "flex", alignItems: "center" }}>
         <div style={{
           width: "100%",
@@ -163,19 +170,39 @@ export default function Hero() {
           margin: "0 auto",
           paddingLeft: sidePadding,
           paddingRight: sidePadding,
-          paddingTop: isMobile ? "100px" : "120px",
+          paddingTop: isMobile ? "110px" : "120px",
           paddingBottom: "40px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
         }}>
 
-          {/* Eyebrow */}
-          <p className="hero-anim" style={{
-            color: "#89e3d5", fontWeight: 700,
-            fontSize: "0.7rem", textTransform: "uppercase",
-            letterSpacing: "0.2em", marginBottom: "1.25rem",
-            fontFamily: "'Montserrat', sans-serif",
-            animationDelay: "0ms",
-          }}>
-          </p>
+          {/* Logo (the navbar logo is hidden on the homepage while at the top) */}
+          <div
+            className="hero-anim"
+            style={{
+              position: "relative",
+              width: isMobile ? "min(260px, 70vw)" : "clamp(300px, 30vw, 440px)",
+              aspectRatio: `${LOGO_ART.w} / ${LOGO_ART.h}`,
+              overflow: "hidden",
+              marginBottom: isMobile ? "1.25rem" : "1.75rem",
+              animationDelay: "0ms",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/plungers-logo.svg"
+              alt="Plungers — Travel Deeper"
+              style={{
+                position: "absolute",
+                width: `${(LOGO_ART.vbW / LOGO_ART.w) * 100}%`,
+                left: `${-(LOGO_ART.x / LOGO_ART.w) * 100}%`,
+                top: `${-(LOGO_ART.y / LOGO_ART.h) * 100}%`,
+                maxWidth: "none",
+              }}
+            />
+          </div>
 
           {/* Headline */}
           <h1
@@ -184,15 +211,15 @@ export default function Hero() {
             onAnimationEnd={releaseEntranceAnimation}
             style={{
               fontFamily: "'Montserrat', sans-serif",
-              fontSize: isMobile ? "2.1rem" : "clamp(2.4rem, 4vw, 3.2rem)",
+              fontSize: isMobile ? "2.6rem" : "clamp(3rem, 5.5vw, 4.5rem)",
               fontWeight: 900, color: "white",
-              lineHeight: 1.15, marginBottom: "1.25rem",
-              paddingRight: isMobile ? "100px" : "200px",
+              lineHeight: 1.1, marginBottom: "1.25rem",
+              textShadow: "0 2px 24px rgba(0,0,0,0.35)",
               animationDelay: "120ms",
               willChange: "transform",
             }}
           >
-            <span style={{ color: "#89e3d5" }}>Connect</span> locally.
+            Connect <span style={{ color: "#89e3d5" }}>locally.</span>
           </h1>
 
           {/* Subheadline */}
@@ -201,17 +228,18 @@ export default function Hero() {
             className="hero-anim"
             onAnimationEnd={releaseEntranceAnimation}
             style={{
-              color: "rgba(255,255,255,0.7)",
-              fontSize: isMobile ? "0.875rem" : "1rem",
-              lineHeight: 1.7, marginBottom: "2rem",
-              maxWidth: "520px", fontWeight: 500,
+              color: "rgba(255,255,255,0.92)",
+              fontSize: isMobile ? "0.95rem" : "1.1rem",
+              lineHeight: 1.6, marginBottom: "2rem",
+              maxWidth: "560px", fontWeight: 500,
+              textShadow: "0 1px 12px rgba(0,0,0,0.35)",
               fontFamily: "'Montserrat', sans-serif",
               animationDelay: "240ms",
               willChange: "transform",
             }}
           >
             Experience local life through the people, traditions, and stories that
-            make each every place unique.
+            make each place unique.
           </p>
 
           {/* Search Bar */}
@@ -227,6 +255,7 @@ export default function Hero() {
               overflow: "hidden",
               width: "100%",
               maxWidth: isMobile ? "100%" : "680px",
+              textAlign: "left",
               animationDelay: "360ms",
               willChange: "transform",
             }}
@@ -241,7 +270,7 @@ export default function Hero() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Where would you like to experience local life?"
+              placeholder="Where are you traveling to?"
               style={{
                 flex: 1,
                 padding: isMobile ? "1rem 1rem" : "1.25rem 1rem",
@@ -259,7 +288,7 @@ export default function Hero() {
                 borderRadius: "9999px",
                 margin: "6px",
                 paddingLeft: isMobile ? "1.25rem" : "2rem",
-                paddingRight: isMobile ? "1.25rem" : "2rem",
+                paddingRight: isMobile ? "1rem" : "1.5rem",
                 paddingTop: isMobile ? "0.75rem" : "1rem",
                 paddingBottom: isMobile ? "0.75rem" : "1rem",
                 color: "white", fontWeight: 700,
@@ -268,24 +297,25 @@ export default function Hero() {
                 border: "none", cursor: "pointer",
                 fontFamily: "'Montserrat', sans-serif",
                 flexShrink: 0,
+                display: "flex", alignItems: "center", gap: "0.4rem",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#00534d")}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#006f6b")}
             >
-              Search
+              Search <ChevronRight size={16} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Trust Badges */}
+      {/* Trust Badges — icon above label, centered columns */}
       <Reveal style={{
         position: "relative", zIndex: 10,
         backgroundColor: "rgba(0, 0, 0, 0)",
         borderTop: "1px solid rgba(255, 255, 255, 0)",
       }}>
         <div style={{
-          maxWidth: "1280px", margin: "0 auto",
+          maxWidth: "1000px", margin: "0 auto",
           paddingLeft: sidePadding, paddingRight: sidePadding,
         }}>
           <div style={{
@@ -296,23 +326,25 @@ export default function Hero() {
               <div
                 key={badge.label}
                 style={{
-                  display: "flex", alignItems: "center",
-                  gap: "0.75rem", color: "white",
-                  paddingTop: "1rem", paddingBottom: "1rem",
-                  paddingLeft: isMobile ? "0.5rem" : (index === 0 ? "0" : "1.5rem"),
-                  paddingRight: isMobile ? "0.5rem" : (index === 3 ? "0" : "1.5rem"),
+                  display: "flex", flexDirection: "column", alignItems: "center",
+                  justifyContent: "center", textAlign: "center",
+                  gap: "0.6rem", color: "white",
+                  paddingTop: "1.25rem", paddingBottom: "1.5rem",
+                  paddingLeft: "1rem", paddingRight: "1rem",
                   borderRight: isMobile
-                    ? (index % 2 === 0 ? "1px solid rgba(255,255,255,0.15)" : "none")
-                    : (index < 3 ? "1px solid rgba(255,255,255,0.15)" : "none"),
+                    ? (index % 2 === 0 ? "1px solid rgba(255,255,255,0.2)" : "none")
+                    : (index < 3 ? "1px solid rgba(255,255,255,0.2)" : "none"),
                   borderBottom: isMobile && index < 2
-                    ? "1px solid rgba(255,255,255,0.15)"
+                    ? "1px solid rgba(255,255,255,0.2)"
                     : "none",
                 }}
               >
-                <span style={{ color: "white", flexShrink: 0 }}>{badge.icon}</span>
+                <span style={{ color: "white", flexShrink: 0, display: "flex" }}>{badge.icon}</span>
                 <span style={{
-                  fontSize: isMobile ? "0.9rem" : "1.1rem",
-                  fontWeight: 600, color: "white",
+                  fontSize: isMobile ? "0.9rem" : "1rem",
+                  fontWeight: 600, color: "white", lineHeight: 1.3,
+                  maxWidth: "9rem",
+                  textShadow: "0 1px 8px rgba(0,0,0,0.35)",
                   fontFamily: "'Montserrat', sans-serif",
                 }}>
                   {badge.label}

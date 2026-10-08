@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, X, User, LogOut, Heart } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -15,6 +16,12 @@ export default function Navbar() {
   const [buttonHovered, setButtonHovered] = useState(false);
   const t = useTranslations("nav");
   const locale = useLocale();
+  const pathname = usePathname();
+
+  // On the homepage the hero shows its own large centered logo, so the white
+  // navbar logo is hidden while at the top of the page. As soon as the page is
+  // scrolled (or the mobile menu opens) the normal dark logo fades back in.
+  const hideLogo = pathname === "/" && !scrolled && !menuOpen;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -49,14 +56,19 @@ export default function Navbar() {
         <div className="flex items-center justify-between py-5">
 
           {/* Logo — left aligned, larger */}
-          <Link href="/" className="flex items-center shrink-0">
+          <Link
+            href="/"
+            className={`flex items-center shrink-0 ${hideLogo ? "pointer-events-none" : ""}`}
+            aria-hidden={hideLogo}
+            tabIndex={hideLogo ? -1 : 0}
+          >
             <img
               src={scrolled || menuOpen
                 ? "/images/plungers-logo-dark.svg"
                 : "/images/plungers-logo.svg"
               }
               alt="Plungers"
-              className="h-39 w-auto transition-all duration-300"
+              className={`h-32 w-auto transition-all duration-300 ${hideLogo ? "opacity-0" : "opacity-100"}`}
             />
           </Link>
 
