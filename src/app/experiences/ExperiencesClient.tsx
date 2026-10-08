@@ -194,7 +194,7 @@ export default function ExperiencesClient({
           letterSpacing: "0.2em",
           marginBottom: "0.75rem",
         }}>
-          Explore
+          Experiences
         </p>
       </Reveal>
 

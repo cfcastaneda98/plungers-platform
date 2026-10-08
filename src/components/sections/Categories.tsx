@@ -15,17 +15,6 @@ export default function Categories() {
         {/* Header */}
         <Reveal>
           <div style={{ marginBottom: "3rem" }}>
-            <p style={{
-              color: "#006f6b",
-              fontWeight: 700,
-              fontSize: "0.7rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.2em",
-              marginBottom: "0.75rem",
-              fontFamily: "'Montserrat', sans-serif",
-            }}>
-              Explore By Type
-            </p>
             <h2 style={{
               fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
               fontWeight: 900,
@@ -33,7 +22,7 @@ export default function Categories() {
               fontFamily: "'Montserrat', sans-serif",
               lineHeight: 1.2,
             }}>
-              Ways to connect locally
+              Explore By Type
             </h2>
           </div>
         </Reveal>

@@ -260,7 +260,7 @@ export default function ExperienceDetailClient({
               {categoryBadges.length > 0 && (
                 <div style={{ marginTop: "1.25rem" }}>
                   <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "rgba(6,38,38,0.4)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "0.625rem" }}>
-                    Ways to connect locally
+                    Experience Categories:
                   </p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                     {categoryBadges.map((badge) => {

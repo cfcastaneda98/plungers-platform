@@ -175,7 +175,6 @@ export default function Hero() {
             fontFamily: "'Montserrat', sans-serif",
             animationDelay: "0ms",
           }}>
-            Plunge Into A World Of Change
           </p>
 
           {/* Headline */}

@@ -38,4 +38,4 @@ export const CATEGORY_SLUG_MAP: Record<string, string> = Object.fromEntries(
 )
 
 // Display label for "Experiences"
-export const SECTION_LABEL = "Ways to Connect Locally"
+export const SECTION_LABEL = "Where are you traveling to?"

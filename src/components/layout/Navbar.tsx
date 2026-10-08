@@ -56,7 +56,7 @@ export default function Navbar() {
                 : "/images/plungers-logo.svg"
               }
               alt="Plungers"
-              className="h-32 w-auto transition-all duration-300"
+              className="h-39 w-auto transition-all duration-300"
             />
           </Link>
 

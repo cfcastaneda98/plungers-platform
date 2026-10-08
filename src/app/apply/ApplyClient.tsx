@@ -26,9 +26,16 @@ const TRUST_BADGES = [
 
 type FormStep = 1 | 2 | 3
 
+const MAX_CATEGORIES = 3
+const CATEGORY_SLOTS = [
+  { label: "Primary Category", required: true, hint: "The category that best describes your experience" },
+  { label: "Second Category", required: false, hint: "Optional" },
+  { label: "Third Category", required: false, hint: "Optional" },
+]
+
 interface FormData {
   business_name: string
-  category: string
+  categories: string[] // ordered by priority: [primary, ...secondary], max 3
   description: string
   email: string
   phone: string
@@ -39,7 +46,7 @@ interface FormData {
 }
 
 const INITIAL_FORM: FormData = {
-  business_name: "", category: "", description: "",
+  business_name: "", categories: [], description: "",
   email: "", phone: "", website: "",
   city: "", country: "", address: "",
 }
@@ -98,11 +105,27 @@ export default function ApplyClient() {
     setError("")
   }
 
+  // Sets the category for a slot (0 = primary). Empty value clears the slot and
+  // shifts lower-ranked picks up so the list never has gaps.
+  function setCategoryAt(index: number, value: string) {
+    setForm(prev => {
+      const next = [...prev.categories]
+      if (!value) {
+        next.splice(index, 1)
+      } else {
+        next[index] = value
+      }
+      const deduped = next.filter((c, i) => c && next.indexOf(c) === i)
+      return { ...prev, categories: deduped.slice(0, MAX_CATEGORIES) }
+    })
+    setError("")
+  }
+
   function validateStep(): boolean {
     switch (step) {
       case 1:
         if (!form.business_name.trim()) { setError("Business name is required"); return false }
-        if (!form.category) { setError("Please select a category"); return false }
+        if (form.categories.length === 0) { setError("Please select at least one category"); return false }
         if (!form.description.trim() || form.description.length < 50) { setError("Please provide a description of at least 50 characters"); return false }
         return true
       case 2:
@@ -126,9 +149,12 @@ export default function ApplyClient() {
     setLoading(true)
     setError("")
     try {
-      await supabase.from('business_applications').insert([{
+      const { error: insertError } = await supabase.from('business_applications').insert([{
         business_name: form.business_name,
-        category: form.category,
+        // Legacy single-category column kept in sync with the primary category
+        category: form.categories[0],
+        primary_category: form.categories[0],
+        secondary_categories: form.categories.slice(1),
         description: form.description,
         email: form.email,
         phone: form.phone,
@@ -138,10 +164,11 @@ export default function ApplyClient() {
         address: form.address || null,
         status: 'pending',
       }])
+      if (insertError) throw insertError
       setSubmitted(true)
-    } catch {
-      console.log('Application data:', form)
-      setSubmitted(true)
+    } catch (err) {
+      console.error('Application submit failed:', err)
+      setError("We couldn't submit your application. Please try again in a moment.")
     } finally {
       setLoading(false)
     }
@@ -368,23 +395,51 @@ export default function ApplyClient() {
                   </div>
                 </div>
 
-                {/* Category */}
+                {/* Categories (ranked, 1-3) */}
                 <div>
-                  <label style={labelStyle}>Experience Category *</label>
-                  <div style={{ position: "relative" }}>
-                    <Tag size={15} style={iconStyle} />
-                    <select
-                      value={form.category}
-                      onChange={(e) => updateForm('category', e.target.value)}
-                      style={{ ...inputStyle, appearance: "none", cursor: "pointer" }}
-                      onFocus={(e) => e.currentTarget.style.borderColor = "#006f6b"}
-                      onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"}
-                    >
-                      <option value="">Select a category</option>
-                      {EXPERIENCE_CATEGORIES.map((cat) => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                    </select>
+                  <label style={labelStyle}>Experience Categories *</label>
+                  <p style={{ fontSize: "0.78rem", color: "rgba(6,38,38,0.55)", fontWeight: 500, lineHeight: 1.5, marginBottom: "0.85rem" }}>
+                    Choose up to {MAX_CATEGORIES}, in order of importance. Your first pick is your primary category.
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                    {CATEGORY_SLOTS.map((slot, i) => {
+                      // A slot unlocks once the one above it is filled
+                      const locked = i > form.categories.length
+                      const value = form.categories[i] || ""
+                      const taken = form.categories.filter((_, idx) => idx !== i)
+                      return (
+                        <div key={slot.label} style={{ display: "flex", alignItems: "center", gap: "0.75rem", opacity: locked ? 0.5 : 1, transition: "opacity 0.2s" }}>
+                          <div style={{
+                            width: "32px", height: "32px", borderRadius: "50%", flexShrink: 0,
+                            backgroundColor: value ? "#006f6b" : "#e0eeee",
+                            color: value ? "white" : "rgba(6,38,38,0.5)",
+                            fontSize: "0.8rem", fontWeight: 800,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                          }}>
+                            {i + 1}
+                          </div>
+                          <div style={{ position: "relative", flex: 1 }}>
+                            <Tag size={15} style={iconStyle} />
+                            <select
+                              value={value}
+                              disabled={locked}
+                              onChange={(e) => setCategoryAt(i, e.target.value)}
+                              aria-label={slot.label}
+                              style={{ ...inputStyle, appearance: "none", cursor: locked ? "not-allowed" : "pointer" }}
+                              onFocus={(e) => e.currentTarget.style.borderColor = "#006f6b"}
+                              onBlur={(e) => e.currentTarget.style.borderColor = "#e0eeee"}
+                            >
+                              <option value="">
+                                {slot.required ? "Select your primary category" : `${slot.label} (optional)`}
+                              </option>
+                              {EXPERIENCE_CATEGORIES.filter((cat) => !taken.includes(cat)).map((cat) => (
+                                <option key={cat} value={cat}>{cat}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
 
@@ -500,13 +555,13 @@ export default function ApplyClient() {
                   </h4>
                   {[
                     { label: "Business", value: form.business_name },
-                    { label: "Category", value: form.category },
+                    { label: form.categories.length > 1 ? "Categories" : "Category", value: form.categories.map((c, i) => `${i + 1}. ${c}`).join("  ·  ") },
                     { label: "Email", value: form.email },
                     { label: "Phone", value: form.phone },
                   ].map((item) => (
-                    <div key={item.label} style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                    <div key={item.label} style={{ display: "flex", justifyContent: "space-between", gap: "1rem", marginBottom: "0.5rem" }}>
                       <span style={{ fontSize: "0.8rem", color: "rgba(6,38,38,0.5)", fontWeight: 500 }}>{item.label}</span>
-                      <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#062626" }}>{item.value}</span>
+                      <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#062626", textAlign: "right" }}>{item.value}</span>
                     </div>
                   ))}
                 </div>

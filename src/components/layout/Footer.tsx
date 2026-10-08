@@ -80,7 +80,7 @@ export default function Footer() {
           <div style={{
             position: "absolute",
             inset: 0,
-            backgroundImage: "url('images/group-of-people-with-backpacks-looking-at-beautifu-2026-03-10-22-29-56-utc.jpg')",
+            backgroundImage: "url('images/traveler-tourist-man-and-women-with-backpack-in-h-2026-09-22-15-52-53-utc.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }} />
@@ -109,7 +109,7 @@ export default function Footer() {
               fontWeight: 500,
               fontFamily: "'Montserrat', sans-serif",
             }}>
-              Discover authentic experiences with local hosts around the world.
+              Earn by sharing what you love with travelers from around the world.
             </p>
           </div>
 
@@ -149,7 +149,7 @@ export default function Footer() {
               <img
                 src="/images/plungers-logo.svg"
                 alt="Plungers"
-                style={{ height: "140px", width: "auto" }}
+                style={{ height: "160px", width: "auto" }}
               />
             </Link>
             <p style={{
@@ -159,7 +159,7 @@ export default function Footer() {
               fontFamily: "'Montserrat', sans-serif",
               marginBottom: "0.25rem",
             }}>
-              Viaje, Aventura y Altruismo
+              Plunge into a world of change
             </p>
             <p style={{
               color: "rgba(255,255,255,0.35)",
