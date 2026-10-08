@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { EXPERIENCE_CATEGORIES } from "@/lib/constants";
+import PageHeaderBanner from "@/components/layout/PageHeaderBanner";
 
 const COUNTRIES = [
   "United States", "Mexico", "Colombia", "Spain",
@@ -321,15 +322,23 @@ export default function ApplyClient() {
   return (
     <main style={{ minHeight: "100vh", backgroundColor: "#f4f7f7", fontFamily: "'Montserrat', sans-serif" }}>
 
-      {/* Header */}
-      <div style={{ backgroundColor: "#062626", paddingTop: "6rem", paddingBottom: "2.5rem", paddingLeft: "80px", paddingRight: "80px" }}>
-        <p style={{ color: "#89e3d5", fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>
-          Become a Host
-        </p>
-        <h1 style={{ fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 900, color: "white", fontFamily: "'Montserrat', sans-serif" }}>
-          List Your Experience
-        </h1>
-      </div>
+      {/* Header (same banner treatment as Privacy / Terms) */}
+      <PageHeaderBanner
+        className="section-pad"
+        imageUrl="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=1920&q=80"
+      >
+        <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+          <p style={{ color: "#89e3d5", fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>
+            Become a Host
+          </p>
+          <h1 style={{ fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 900, color: "white", fontFamily: "'Montserrat', sans-serif", marginBottom: "1rem" }}>
+            List Your Experience
+          </h1>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.875rem" }}>
+            Share your culture with travelers &nbsp;•&nbsp; Applications reviewed within 3-5 business days
+          </p>
+        </div>
+      </PageHeaderBanner>
 
       {/* Progress Steps */}
       <div style={{ backgroundColor: "white", borderBottom: "1px solid #e0eeee", padding: "1.25rem 80px", position: "sticky", top: "72px", zIndex: 30 }}>

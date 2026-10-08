@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import PageHeaderBanner from "@/components/layout/PageHeaderBanner";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Plungers",
@@ -78,15 +79,9 @@ export default function PrivacyPage() {
       className="min-h-screen bg-white"
     >
       {/* Header band */}
-      <div
+      <PageHeaderBanner
         className="section-pad"
-        style={{
-          backgroundColor: "#062626",
-          paddingTop: "12rem",
-          paddingBottom: "2.5rem",
-          paddingLeft: "80px",
-          paddingRight: "80px",
-        }}
+        imageUrl="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=1920&q=80"
       >
         <div style={{ maxWidth: "900px", margin: "0 auto" }}>
           <p
@@ -116,7 +111,7 @@ export default function PrivacyPage() {
             Effective Date: {EFFECTIVE_DATE} &nbsp;•&nbsp; Last Updated: {LAST_UPDATED}
           </p>
         </div>
-      </div>
+      </PageHeaderBanner>
 
       {/* Body */}
       <div
