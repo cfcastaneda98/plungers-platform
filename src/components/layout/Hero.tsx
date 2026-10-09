@@ -153,7 +153,7 @@ export default function Hero() {
       <div ref={bgRef} style={{
         position: "absolute", top: `-${PARALLAX_MAX_SHIFT}px`, left: 0, right: 0,
         height: `calc(100% + ${PARALLAX_MAX_SHIFT * 2}px)`,
-        backgroundImage: "url('images/group-of-people-with-backpacks-looking-at-beautifu-2026-03-10-22-29-56-utc.jpg')",
+        backgroundImage: "url('images/hero-2.jpg')",
         backgroundSize: "cover", backgroundPosition: "center",
         transform: "translate3d(0, 0, 0)",
         willChange: "transform",
