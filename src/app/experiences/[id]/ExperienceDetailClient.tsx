@@ -17,6 +17,7 @@ import WriteReview from "@/components/ui/WriteReview";
 import { CATEGORY_CAROUSEL_CONFIG } from "@/components/sections/CategoryCarousel";
 import { CATEGORY_SLUG_MAP } from "@/lib/constants";
 import Reveal from "@/components/ui/Reveal";
+import CategoryIcon from "@/components/ui/CategoryIcon";
 
 const ExperienceMap = dynamic(
   () => import("@/components/ui/ExperienceMap"),
@@ -132,7 +133,7 @@ export default function ExperienceDetailClient({
   const categoryBadges = categoryLabels.map((label) => {
     const slug = CATEGORY_SLUG_MAP[label]
     const config = CATEGORY_CAROUSEL_CONFIG.find((c) => c.slug === slug)
-    return { label, icon: config?.icon, bg: config?.bg || "#f4f7f7", color: config?.color || "#062626" }
+    return { label, slug: config?.slug, bg: config?.bg || "#f4f7f7", color: config?.color || "#062626" }
   })
 
   const displayIncludes = ((experience.includes && experience.includes.length >= 4)
@@ -264,19 +265,18 @@ export default function ExperienceDetailClient({
                   </p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                     {categoryBadges.map((badge) => {
-                      const Icon = badge.icon
                       return (
                         <span
                           key={badge.label}
                           style={{
-                            display: "flex", alignItems: "center", gap: "6px",
+                            display: "flex", alignItems: "center", gap: "8px",
                             backgroundColor: badge.bg, color: badge.color,
                             fontSize: "0.78rem", fontWeight: 700,
-                            padding: "0.5rem 0.875rem", borderRadius: "9999px",
+                            padding: "0.4rem 0.95rem 0.4rem 0.7rem", borderRadius: "9999px",
                             fontFamily: font,
                           }}
                         >
-                          {Icon && <Icon size={13} />}
+                          {badge.slug && <CategoryIcon slug={badge.slug} size={22} color={badge.color} />}
                           {badge.label}
                         </span>
                       )
