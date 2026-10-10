@@ -37,6 +37,27 @@ interface CategoryCarouselProps {
   onSelect: (slug: string) => void
 }
 
+// Categories that have a custom SVG at public/icons/<slug>.svg.
+// Add a slug here as each file arrives; any category not listed keeps its
+// original Lucide icon, so nothing breaks while icons come in batches.
+// (Once all 13 are in, this can be deleted along with the Lucide fallback.)
+const CUSTOM_ICON_SLUGS = new Set<string>([
+  "heritage-history",
+  "traditional-knowledge",
+  "art-craftsmanship",
+  "music-performance",
+  "food-traditions",
+  "agriculture-farms",
+  "nature-local-knowledge",
+  "community-local-life",
+  "festivals-celebrations",
+  "storytelling-oral-traditions",
+  "spiritual-cultural-practices",
+  "volunteering-impact",
+  "ways-of-life"
+])
+const CUSTOM_ICON_SIZE = 36 // px, the custom artwork fills its artboard edge to edge
+
 const ITEM_WIDTH = 140 // px, must match the button width below
 const ITEM_GAP = 16
 const STEP = ITEM_WIDTH + ITEM_GAP
@@ -114,7 +135,28 @@ export default function CategoryCarousel({ activeCategory = "", onSelect }: Cate
                   transition: "outline-color 0.2s, transform 0.22s ease, box-shadow 0.22s ease",
                 }}
               >
-                  <Icon size={34} strokeWidth={1.6} color={cat.color} />
+                  {CUSTOM_ICON_SLUGS.has(cat.slug) ? (
+                    // Single-color SVG used as a mask so it takes the category color
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        display: "block",
+                        width: `${CUSTOM_ICON_SIZE}px`,
+                        height: `${CUSTOM_ICON_SIZE}px`,
+                        backgroundColor: cat.color,
+                        WebkitMaskImage: `url(/icons/${cat.slug}.svg)`,
+                        maskImage: `url(/icons/${cat.slug}.svg)`,
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskPosition: "center",
+                        maskPosition: "center",
+                        WebkitMaskSize: "contain",
+                        maskSize: "contain",
+                      }}
+                    />
+                  ) : (
+                    <Icon size={34} strokeWidth={1.6} color={cat.color} />
+                  )}
                 </div>
                 <span style={{
                   fontSize: "0.95rem", fontWeight: 700, textAlign: "center",
