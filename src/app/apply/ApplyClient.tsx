@@ -9,7 +9,7 @@ import {
   Loader2, ArrowRight, Lock, Zap, PiggyBank
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { EXPERIENCE_CATEGORIES } from "@/lib/constants";
+import { ACTIVE_EXPERIENCE_CATEGORIES } from "@/lib/constants";
 import PageHeaderBanner from "@/components/layout/PageHeaderBanner";
 
 const COUNTRIES = [
@@ -441,7 +441,7 @@ export default function ApplyClient() {
                               <option value="">
                                 {slot.required ? "Select your primary category" : `${slot.label} (optional)`}
                               </option>
-                              {EXPERIENCE_CATEGORIES.filter((cat) => !taken.includes(cat)).map((cat) => (
+                              {ACTIVE_EXPERIENCE_CATEGORIES.filter((cat) => !taken.includes(cat)).map((cat) => (
                                 <option key={cat} value={cat}>{cat}</option>
                               ))}
                             </select>

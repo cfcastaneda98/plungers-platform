@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { isCategoryEnabled } from "@/lib/constants";
 import {
   ChevronLeft, ChevronRight,
   Landmark, BookOpen, Palette, Music,
@@ -58,6 +59,11 @@ const CUSTOM_ICON_SLUGS = new Set<string>([
 ])
 const CUSTOM_ICON_SIZE = 36 // px, the custom artwork fills its artboard edge to edge
 
+// CATEGORY_CAROUSEL_CONFIG above stays complete (the experience detail page uses
+// it for badge colors). The carousel itself only shows enabled categories —
+// see DISABLED_CATEGORY_SLUGS in src/lib/constants.ts.
+const VISIBLE_CATEGORIES = CATEGORY_CAROUSEL_CONFIG.filter((c) => isCategoryEnabled(c.slug))
+
 const ITEM_WIDTH = 140 // px, must match the button width below
 const ITEM_GAP = 16
 const STEP = ITEM_WIDTH + ITEM_GAP
@@ -74,7 +80,7 @@ export default function CategoryCarousel({ activeCategory = "", onSelect }: Cate
     const el = scrollRef.current
     if (!el) return
     const index = Math.round(el.scrollLeft / STEP)
-    setActiveIndex(Math.max(0, Math.min(index, CATEGORY_CAROUSEL_CONFIG.length - 1)))
+    setActiveIndex(Math.max(0, Math.min(index, VISIBLE_CATEGORIES.length - 1)))
   }
 
   return (
@@ -104,7 +110,7 @@ export default function CategoryCarousel({ activeCategory = "", onSelect }: Cate
             scrollSnapType: "x mandatory", flex: 1, padding: "0.5rem 0",
           }}
         >
-          {CATEGORY_CAROUSEL_CONFIG.map((cat) => {
+          {VISIBLE_CATEGORIES.map((cat) => {
             const Icon = cat.icon
             const isActive = activeCategory === cat.slug
             return (
@@ -186,7 +192,7 @@ export default function CategoryCarousel({ activeCategory = "", onSelect }: Cate
 
       {/* Dot pagination */}
       <div style={{ display: "flex", justifyContent: "center", gap: "6px", marginTop: "1.5rem" }}>
-        {CATEGORY_CAROUSEL_CONFIG.map((cat, i) => (
+        {VISIBLE_CATEGORIES.map((cat, i) => (
           <span
             key={cat.slug}
             style={{
